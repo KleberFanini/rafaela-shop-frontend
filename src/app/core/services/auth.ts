@@ -1,9 +1,21 @@
 import { Injectable, signal, computed } from '@angular/core';
 
+export interface UserAddress {
+  zipCode: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
 export interface UserSession {
   name: string;
   email: string;
+  phone?: string;
   role: 'ADMIN' | 'CUSTOMER';
+  address?: UserAddress;
 }
 
 @Injectable({
@@ -12,7 +24,6 @@ export interface UserSession {
 export class AuthService {
   private readonly storageKey = 'rg_user_session';
 
-  // Lê a sessão do localStorage se existir
   private currentUserSignal = signal<UserSession | null>(this.loadUserFromStorage());
 
   readonly currentUser = this.currentUserSignal.asReadonly();

@@ -1,1 +1,281 @@
-<p>checkout works!</p>
+<section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8 lg:px-12">
+    <div class="max-w-[1300px] mx-auto">
+
+        <!-- Confirmação do Pedido -->
+        <div *ngIf="orderPlaced()"
+            class="max-w-xl mx-auto py-16 text-center bg-rg-surface border border-rg-rose/30 p-8 shadow-2xl">
+            <span class="text-4xl text-rg-rose block mb-4">✦</span>
+            <h1 class="font-serif text-3xl text-gray-100">Pedido Confirmado!</h1>
+            <p class="text-xs text-gray-400 mt-2 uppercase tracking-widest">
+                Código: #RG-{{ customerData.phone.slice(-4) || '8492' }}
+            </p>
+
+            <p class="text-sm text-gray-300 mt-6 font-light leading-relaxed">
+                Obrigado por sua compra na <strong>Rafaela Gamero</strong>. Enviamos os detalhes para o e-mail
+                <strong>{{ customerData.email }}</strong>.
+            </p>
+
+            <div *ngIf="paymentMethod() === 'PIX'" class="my-6 p-4 bg-rg-dark border border-rg-rose/20 text-center">
+                <p class="text-xs text-rg-rose font-semibold uppercase tracking-wider mb-2">Chave PIX Copia e Cola
+                    (Simulação):</p>
+                <code class="text-[11px] text-gray-400 select-all block bg-black/40 p-2 break-all">
+          00020126580014br.gov.bcb.pix0136rafaelagamero-shop-mvp-pix-key520400005303986
+        </code>
+            </div>
+
+            <a routerLink="/produtos"
+                class="mt-8 inline-block px-8 py-3 border border-rg-rose bg-rg-rose text-rg-dark text-xs uppercase tracking-[0.2em] font-semibold hover:bg-transparent hover:text-rg-rose transition-all">
+                Voltar à Loja
+            </a>
+        </div>
+
+        <!-- Tela do Checkout -->
+        <div *ngIf="!orderPlaced()" class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+
+            <div class="lg:col-span-2 space-y-8">
+
+                <header class="border-b border-rg-rose/20 pb-4">
+                    <p class="text-[10px] tracking-[0.3em] text-rg-rose uppercase">Finalização de Compra</p>
+                    <h1 class="font-serif text-3xl text-gray-100 mt-1">Identificação e Entrega</h1>
+                </header>
+
+                <form class="space-y-6">
+
+                    <!-- 1. DADOS DO COMPRADOR -->
+                    <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-4">
+                        <h2 class="text-xs uppercase tracking-widest text-rg-rose font-semibold">1. Identificação</h2>
+
+                        <!-- CASO 1: USUÁRIO CONECTADO (Mostra apenas card resumo) -->
+                        <div *ngIf="authService.isLoggedIn()"
+                            class="p-4 bg-rg-dark border border-rg-rose/30 flex items-center justify-between">
+                            <div class="text-xs text-gray-300 space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="text-rg-rose font-semibold uppercase tracking-wider text-[10px]">Comprando
+                                        como:</span>
+                                    <span class="text-gray-100 font-medium">{{ customerData.name }}</span>
+                                </div>
+                                <p class="text-gray-400">E-mail: {{ customerData.email }}</p>
+                                <p class="text-gray-400" *ngIf="customerData.phone">WhatsApp: {{ customerData.phone }}
+                                </p>
+                            </div>
+                            <span class="text-rg-rose text-sm font-semibold">Conectado ✓</span>
+                        </div>
+
+                        <!-- CASO 2: NÃO CONECTADO (Inputs de digitação + aviso de login) -->
+                        <div *ngIf="!authService.isLoggedIn()" class="space-y-4">
+                            <div
+                                class="p-3 bg-rg-dark border border-rg-rose/20 flex items-center justify-between text-xs text-gray-400">
+                                <span>Já possui uma conta com endereço cadastrado?</span>
+                                <a routerLink="/login"
+                                    class="text-rg-rose hover:underline uppercase tracking-wider font-semibold text-[11px]">
+                                    Fazer Login
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Nome
+                                        Completo</label>
+                                    <input type="text" name="name" [(ngModel)]="customerData.name"
+                                        placeholder="Seu nome"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">E-mail</label>
+                                    <input type="email" name="email" [(ngModel)]="customerData.email"
+                                        placeholder="seu@email.com"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">WhatsApp</label>
+                                    <input type="tel" name="phone" [(ngModel)]="customerData.phone"
+                                        placeholder="(00) 00000-0000"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 2. ENDEREÇO DE ENTREGA -->
+                    <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xs uppercase tracking-widest text-rg-rose font-semibold">2. Endereço de
+                                Entrega</h2>
+
+                            <!-- Botão Editar visível apenas se houver endereço salvo e não estiver editando -->
+                            <button *ngIf="hasSavedAddress() && !isEditingAddress()" type="button"
+                                (click)="toggleEditAddress()"
+                                class="text-[11px] text-rg-rose hover:text-rg-roseLight uppercase tracking-wider font-semibold border-b border-rg-rose pb-0.5 transition-colors">
+                                Editar
+                            </button>
+                        </div>
+
+                        <!-- CASO 1: MOSTRA APENAS O RESUMO -->
+                        <div *ngIf="hasSavedAddress() && !isEditingAddress()"
+                            class="p-4 bg-rg-dark border border-rg-rose/30 flex items-start justify-between">
+                            <div class="text-xs text-gray-300 space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="text-rg-rose font-semibold uppercase tracking-wider text-[10px]">Entregar
+                                        em:</span>
+                                    <span class="text-gray-100 font-medium">{{ customerData.street }}, nº {{
+                                        customerData.number }}</span>
+                                </div>
+                                <p class="text-gray-400" *ngIf="customerData.complement">Complemento: {{
+                                    customerData.complement }}</p>
+                                <p class="text-gray-400">{{ customerData.neighborhood }} — {{ customerData.city }}/{{
+                                    customerData.state }}</p>
+                                <p class="text-gray-500 text-[11px]">CEP: {{ customerData.zipCode }}</p>
+                            </div>
+                            <span class="text-rg-rose text-base">✓</span>
+                        </div>
+
+                        <!-- CASO 2: MOSTRA FORMULÁRIO SE NÃO TIVER SALVO OU SE CLICOU EM EDITAR -->
+                        <div *ngIf="!hasSavedAddress() || isEditingAddress()" class="space-y-4 pt-2">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="col-span-1">
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">CEP</label>
+                                    <input type="text" name="zipCode" [(ngModel)]="customerData.zipCode"
+                                        (input)="onZipCodeChange()" placeholder="00000-000" maxlength="9"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                                <div class="col-span-2">
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Rua</label>
+                                    <input type="text" name="street" [(ngModel)]="customerData.street"
+                                        placeholder="Rua / Logradouro"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Número</label>
+                                    <input type="text" name="number" [(ngModel)]="customerData.number" placeholder="123"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                                <div class="col-span-2">
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Complemento</label>
+                                    <input type="text" name="complement" [(ngModel)]="customerData.complement"
+                                        placeholder="Apto, Bloco..."
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Bairro</label>
+                                    <input type="text" name="neighborhood" [(ngModel)]="customerData.neighborhood"
+                                        placeholder="Bairro"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Cidade</label>
+                                    <input type="text" name="city" [(ngModel)]="customerData.city" placeholder="Cidade"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Estado</label>
+                                    <input type="text" name="state" [(ngModel)]="customerData.state" placeholder="PE"
+                                        maxlength="2"
+                                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                                </div>
+                            </div>
+
+                            <div *ngIf="hasSavedAddress()" class="flex justify-end pt-2">
+                                <button type="button" (click)="saveAddress()"
+                                    class="px-4 py-1.5 border border-rg-rose bg-rg-rose text-rg-dark text-[11px] uppercase tracking-wider font-semibold hover:bg-transparent hover:text-rg-rose transition-colors">
+                                    Salvar Endereço
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. FORMA DE PAGAMENTO -->
+                    <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-4">
+                        <h2 class="text-xs uppercase tracking-widest text-rg-rose font-semibold">3. Forma de Pagamento
+                        </h2>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button type="button" (click)="setPaymentMethod('PIX')"
+                                [class.border-rg-rose]="paymentMethod() === 'PIX'"
+                                [class.bg-rg-dark]="paymentMethod() === 'PIX'"
+                                class="p-4 border border-rg-rose/30 text-left transition-all hover:border-rg-rose">
+                                <span class="block text-xs uppercase tracking-wider font-semibold text-gray-200">PIX (5%
+                                    OFF)</span>
+                                <span class="text-[11px] text-rg-rose mt-1 block">Aprovação imediata</span>
+                            </button>
+
+                            <button type="button" (click)="setPaymentMethod('CREDIT_CARD')"
+                                [class.border-rg-rose]="paymentMethod() === 'CREDIT_CARD'"
+                                [class.bg-rg-dark]="paymentMethod() === 'CREDIT_CARD'"
+                                class="p-4 border border-rg-rose/30 text-left transition-all hover:border-rg-rose">
+                                <span class="block text-xs uppercase tracking-wider font-semibold text-gray-200">Cartão
+                                    de Crédito</span>
+                                <span class="text-[11px] text-gray-400 mt-1 block">Em até 6x sem juros</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- RESUMO LATERAL -->
+            <aside class="p-6 bg-rg-surface border border-rg-rose/30 space-y-6">
+                <h2 class="font-serif text-lg text-gray-100 border-b border-rg-rose/20 pb-3">Itens do Pedido</h2>
+
+                <div class="space-y-4 max-h-72 overflow-y-auto pr-2">
+                    <div *ngFor="let item of cartService.items()" class="flex justify-between items-center text-xs">
+                        <div class="pr-2">
+                            <p class="text-gray-200 font-medium">{{ item.quantity }}x {{ item.product.name }}</p>
+                            <p *ngIf="item.selectedVariant" class="text-[10px] text-gray-400">
+                                {{ item.selectedVariant.size || item.selectedVariant.color }}
+                            </p>
+                        </div>
+                        <span class="text-rg-rose font-medium whitespace-nowrap">
+                            R$ {{ (item.product.price * item.quantity).toFixed(2) }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="border-t border-rg-rose/20 pt-4 space-y-2 text-xs">
+                    <div class="flex justify-between text-gray-300">
+                        <span>Subtotal</span>
+                        <span>R$ {{ cartService.subtotal().toFixed(2) }}</span>
+                    </div>
+                    <div *ngIf="paymentMethod() === 'PIX'" class="flex justify-between text-rg-rose">
+                        <span>Desconto PIX (5%)</span>
+                        <span>- R$ {{ (cartService.subtotal() * 0.05).toFixed(2) }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-300">
+                        <span>Frete</span>
+                        <span class="text-rg-rose font-semibold uppercase text-[10px]">Grátis</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-rg-rose/20 pt-4 flex justify-between items-baseline">
+                    <span class="text-xs uppercase tracking-widest font-semibold text-gray-200">Total a Pagar</span>
+                    <span class="font-serif text-2xl text-rg-rose">R$ {{ calculateTotal().toFixed(2) }}</span>
+                </div>
+
+                <button type="button" (click)="placeOrder()" [disabled]="!isFormValid()"
+                    class="w-full py-4 bg-rg-rose text-rg-dark font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose border border-rg-rose transition-all duration-300 disabled:opacity-40">
+                    {{ loading() ? 'Processando Pedido...' : 'Concluir Compra' }}
+                </button>
+            </aside>
+
+        </div>
+
+    </div>
+</section>

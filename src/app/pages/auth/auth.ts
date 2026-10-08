@@ -74,14 +74,23 @@ export class Auth {
       this.loading.set(false);
       const isAdmin = this.loginData.email.toLowerCase().includes('admin');
 
-      // Registra a sessão no AuthService
+      // Inclui o endereço para não ficar vazio no login
       this.authService.login({
         name: isAdmin ? 'Administrador' : 'Cliente Rafaela',
         email: this.loginData.email,
-        role: isAdmin ? 'ADMIN' : 'CUSTOMER'
+        phone: '(81) 99876-5432',
+        role: isAdmin ? 'ADMIN' : 'CUSTOMER',
+        address: {
+          zipCode: '50000-000',
+          street: 'Avenida Boa Viagem',
+          number: '1500',
+          complement: 'Apt 402',
+          neighborhood: 'Boa Viagem',
+          city: 'Recife',
+          state: 'PE'
+        }
       });
 
-      // Redireciona de acordo com o papel do usuário
       if (isAdmin) {
         this.router.navigate(['/admin/dashboard']);
       } else {
@@ -108,14 +117,22 @@ export class Auth {
     setTimeout(() => {
       this.loading.set(false);
 
-      // Registra a sessão com o nome e e-mail informados no cadastro
       this.authService.login({
         name: this.registerData.name,
         email: this.registerData.email,
-        role: 'CUSTOMER'
+        phone: this.registerData.phone,
+        role: 'CUSTOMER',
+        address: {
+          zipCode: this.registerData.zipCode,
+          street: this.registerData.street,
+          number: this.registerData.number,
+          complement: this.registerData.complement,
+          neighborhood: this.registerData.neighborhood,
+          city: this.registerData.city,
+          state: this.registerData.state
+        }
       });
 
-      // Redireciona para o checkout após criar a conta
       this.router.navigate(['/checkout']);
     }, 600);
   }

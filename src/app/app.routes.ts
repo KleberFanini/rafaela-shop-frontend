@@ -4,6 +4,7 @@ import { ProductList } from './pages/products/product-list/product-list';
 import { ProductDetail } from './pages/products/product-detail/product-detail';
 import { Cart } from './pages/cart/cart';
 import { Checkout } from './pages/checkout/checkout';
+import { Auth } from './pages/auth/auth';
 import { Dashboard } from './pages/admin/dashboard/dashboard';
 import { ProductForm } from './pages/admin/product-form/product-form';
 import { Orders } from './pages/admin/orders/orders';
@@ -15,6 +16,7 @@ export const routes: Routes = [
     { path: 'produtos/:id', component: ProductDetail },
     { path: 'carrinho', component: Cart },
     { path: 'checkout', component: Checkout },
+    { path: 'login', component: Auth },
 
     // Área Administrativa[cite: 2]
     { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },

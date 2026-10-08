@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../core/services/cart';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -14,12 +15,12 @@ import { CartService } from '../../../core/services/cart';
 export class Navbar {
   private router = inject(Router);
   private cartService = inject(CartService);
+  public authService = inject(AuthService); // Injetado público para uso no HTML
 
   menuOpen = signal(false);
   searchOpen = signal(false);
   searchQuery = signal('');
 
-  // Agora this.cartService já existe no momento da atribuição
   cartCount = this.cartService.totalItemsCount;
 
   navLinks = [
@@ -58,5 +59,10 @@ export class Navbar {
   searchKeyword(keyword: string) {
     this.searchOpen.set(false);
     this.router.navigate(['/produtos'], { queryParams: { q: keyword } });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

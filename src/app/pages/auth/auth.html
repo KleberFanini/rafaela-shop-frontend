@@ -1,1 +1,163 @@
-<p>auth works!</p>
+<section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8">
+    <div class="max-w-xl mx-auto">
+
+        <!-- Cabeçalho -->
+        <div class="text-center mb-10">
+            <p class="text-[10px] tracking-[0.35em] text-rg-rose uppercase">Rafaela Gamero</p>
+            <h1 class="font-serif text-3xl sm:text-4xl text-gray-100 mt-2">
+                {{ isLoginMode() ? 'Acesse sua Conta' : 'Criar Cadastro' }}
+            </h1>
+            <p class="text-xs text-gray-400 mt-2 font-light">
+                {{ isLoginMode()
+                ? 'Acompanhe seus pedidos ou acesse o painel administrativo.'
+                : 'Preencha seus dados para salvar endereços e agilizar suas compras.' }}
+            </p>
+        </div>
+
+        <!-- Container do Formulário -->
+        <div class="bg-rg-surface border border-rg-rose/20 p-6 sm:p-10 shadow-2xl">
+
+            <!-- Mensagem de Erro Geral -->
+            <div *ngIf="errorMessage()"
+                class="mb-6 p-3 bg-red-950/40 border border-red-500/40 text-red-300 text-xs text-center">
+                {{ errorMessage() }}
+            </div>
+
+            <!-- FORMULÁRIO DE LOGIN -->
+            <form *ngIf="isLoginMode()" (ngSubmit)="onLogin()" #fLogin="ngForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-300 mb-2">E-mail</label>
+                    <input type="email" name="email" required [(ngModel)]="loginData.email" placeholder="seu@email.com"
+                        class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-3 text-xs text-gray-100 outline-none focus:border-rg-rose transition-colors" />
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-300 mb-2">Senha</label>
+                    <input type="password" name="password" required [(ngModel)]="loginData.password"
+                        placeholder="Sua senha"
+                        class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-3 text-xs text-gray-100 outline-none focus:border-rg-rose transition-colors" />
+                </div>
+
+                <button type="submit" [disabled]="!fLogin.form.valid || loading()"
+                    class="w-full py-3.5 bg-rg-rose text-rg-dark font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose border border-rg-rose transition-all duration-300 disabled:opacity-40">
+                    {{ loading() ? 'Entrando...' : 'Entrar' }}
+                </button>
+            </form>
+
+            <!-- FORMULÁRIO DE CADASTRO -->
+            <form *ngIf="!isLoginMode()" (ngSubmit)="onRegister()" #fRegister="ngForm" class="space-y-4">
+
+                <!-- Dados Pessoais -->
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-300 mb-1">Nome Completo</label>
+                    <input type="text" name="name" required [(ngModel)]="registerData.name" placeholder="Nome Sobrenome"
+                        class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-2.5 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-gray-300 mb-1">E-mail</label>
+                        <input type="email" name="regEmail" required [(ngModel)]="registerData.email"
+                            placeholder="seu@email.com"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-2.5 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-gray-300 mb-1">WhatsApp</label>
+                        <input type="tel" name="phone" required [(ngModel)]="registerData.phone"
+                            placeholder="(81) 99999-9999"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-2.5 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-gray-300 mb-1">Senha</label>
+                        <input type="password" name="regPass" required [(ngModel)]="registerData.password"
+                            placeholder="Mínimo 6 caracteres"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-2.5 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-gray-300 mb-1">Confirmar
+                            Senha</label>
+                        <input type="password" name="regConfirmPass" required [(ngModel)]="registerData.confirmPassword"
+                            placeholder="Repita a senha"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-4 py-2.5 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-rg-rose/20">
+                    <p class="text-[10px] uppercase tracking-widest text-rg-rose mb-3">Endereço de Entrega</p>
+                </div>
+
+                <!-- Endereço com Busca por CEP -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-1">
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">CEP</label>
+                        <input type="text" name="zipCode" required [(ngModel)]="registerData.zipCode"
+                            (input)="onZipCodeChange()" placeholder="00000-000" maxlength="9"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Rua /
+                            Logradouro</label>
+                        <input type="text" name="street" required [(ngModel)]="registerData.street"
+                            placeholder="Rua / Avenida"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Número</label>
+                        <input type="text" name="number" required [(ngModel)]="registerData.number" placeholder="123"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Complemento</label>
+                        <input type="text" name="complement" [(ngModel)]="registerData.complement"
+                            placeholder="Apto 101, Bloco B"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Bairro</label>
+                        <input type="text" name="neighborhood" required [(ngModel)]="registerData.neighborhood"
+                            placeholder="Bairro"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Cidade</label>
+                        <input type="text" name="city" required [(ngModel)]="registerData.city" placeholder="Cidade"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Estado</label>
+                        <input type="text" name="state" required [(ngModel)]="registerData.state" placeholder="PE"
+                            maxlength="2"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                </div>
+
+                <button type="submit" [disabled]="!fRegister.form.valid || loading()"
+                    class="mt-6 w-full py-3.5 bg-rg-rose text-rg-dark font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose border border-rg-rose transition-all duration-300 disabled:opacity-40">
+                    {{ loading() ? 'Cadastrando...' : 'Finalizar Cadastro' }}
+                </button>
+            </form>
+
+            <!-- Alternador de Modos -->
+            <div class="mt-8 pt-6 border-t border-rg-rose/20 text-center">
+                <p class="text-xs text-gray-400">
+                    {{ isLoginMode() ? 'Ainda não possui uma conta?' : 'Já possui cadastro?' }}
+                    <button type="button" (click)="toggleMode()"
+                        class="ml-1 text-rg-rose hover:underline font-semibold uppercase tracking-wider text-[11px]">
+                        {{ isLoginMode() ? 'Criar agora' : 'Fazer Login' }}
+                    </button>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</section>

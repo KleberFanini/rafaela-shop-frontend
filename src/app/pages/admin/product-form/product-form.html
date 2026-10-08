@@ -1,1 +1,167 @@
-<p>product-form works!</p>
+<section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8 lg:px-12">
+    <div class="max-w-4xl mx-auto space-y-8">
+
+        <!-- Cabeçalho -->
+        <div class="flex justify-between items-center border-b border-rg-rose/20 pb-4">
+            <div>
+                <p class="text-[10px] tracking-[0.35em] text-rg-rose uppercase">Gestão de Catálogo</p>
+                <h1 class="font-serif text-3xl text-gray-100 mt-1">Registar Novo Artigo</h1>
+            </div>
+            <a routerLink="/admin/dashboard"
+                class="text-xs uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors">
+                &larr; Voltar ao Painel
+            </a>
+        </div>
+
+        <!-- Mensagem de Erro -->
+        <div *ngIf="errorMessage()" class="p-3 bg-red-950/40 border border-red-500/40 text-red-300 text-xs text-center">
+            {{ errorMessage() }}
+        </div>
+
+        <!-- Formulário Principal -->
+        <form (ngSubmit)="onSubmit()" class="bg-rg-surface border border-rg-rose/20 p-6 sm:p-8 space-y-6">
+
+            <!-- Informações Gerais -->
+            <div class="space-y-4">
+                <h2
+                    class="text-xs uppercase tracking-widest text-rg-rose font-semibold border-b border-rg-rose/10 pb-2">
+                    1. Detalhes Gerais
+                </h2>
+
+                <div>
+                    <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Nome do Produto</label>
+                    <input type="text" name="name" required [(ngModel)]="productData.name"
+                        placeholder="Ex: Legging Glow Alta Compressão"
+                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Categoria</label>
+                        <select name="category" required [(ngModel)]="productData.categoryId"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose">
+                            <option *ngFor="let cat of categories()" [value]="cat.id">
+                                {{ cat.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Preço (R$)</label>
+                        <input type="number" step="0.01" name="price" required [(ngModel)]="productData.price"
+                            placeholder="189.90"
+                            class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Descrição</label>
+                    <textarea name="description" rows="3" [(ngModel)]="productData.description"
+                        placeholder="Detalhes de caimento, tecido ou banho..."
+                        class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose"></textarea>
+                </div>
+            </div>
+
+            <!-- Variações e Gestão de Stock -->
+            <div class="space-y-4 pt-4">
+                <div class="flex justify-between items-center border-b border-rg-rose/10 pb-2">
+                    <h2 class="text-xs uppercase tracking-widest text-rg-rose font-semibold">
+                        2. Variações & Stock
+                    </h2>
+                    <button type="button" (click)="addVariant()"
+                        class="text-[11px] uppercase tracking-wider text-rg-rose hover:text-rg-roseLight font-medium">
+                        + Adicionar Opção
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <div *ngFor="let variant of variants(); let i = index"
+                        class="grid grid-cols-12 gap-3 items-center bg-rg-dark/50 p-3 border border-rg-rose/10">
+
+                        <div class="col-span-4">
+                            <label class="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Tamanho /
+                                Medida</label>
+                            <input type="text" [(ngModel)]="variant.size" [name]="'size_' + i"
+                                placeholder="P, M, G ou 40cm"
+                                class="w-full bg-rg-dark border border-rg-rose/20 px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-rg-rose" />
+                        </div>
+
+                        <div class="col-span-4">
+                            <label class="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Cor /
+                                Banho</label>
+                            <input type="text" [(ngModel)]="variant.color" [name]="'color_' + i"
+                                placeholder="Preto, Rose Gold..."
+                                class="w-full bg-rg-dark border border-rg-rose/20 px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-rg-rose" />
+                        </div>
+
+                        <div class="col-span-3">
+                            <label class="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Qtd em
+                                Stock</label>
+                            <input type="number" [(ngModel)]="variant.stock" [name]="'stock_' + i" min="0"
+                                class="w-full bg-rg-dark border border-rg-rose/20 px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-rg-rose" />
+                        </div>
+
+                        <div class="col-span-1 text-center pt-4">
+                            <button type="button" (click)="removeVariant(i)" [disabled]="variants().length === 1"
+                                class="text-gray-500 hover:text-red-400 disabled:opacity-20 text-sm">
+                                ✕
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload de Imagem do Artigo -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start pt-2">
+                <div class="sm:col-span-2">
+                    <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-2">
+                        Fotografia do Artigo
+                    </label>
+
+                    <div
+                        class="border-2 border-dashed border-rg-rose/30 hover:border-rg-rose p-6 text-center bg-rg-dark/40 transition-colors flex flex-col items-center justify-center">
+                        <svg class="size-8 text-rg-rose mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+
+                        <label for="fileUpload"
+                            class="cursor-pointer px-4 py-2 bg-rg-surface border border-rg-rose/40 text-rg-rose text-xs uppercase tracking-wider font-semibold hover:bg-rg-rose hover:text-rg-dark transition-all">
+                            Escolher Ficheiro
+                        </label>
+                        <input id="fileUpload" type="file" (change)="onFileSelected($event)" accept="image/*"
+                            class="hidden" />
+
+                        <p class="text-[10px] text-gray-400 mt-2">
+                            Formatos aceites: JPG, PNG ou WEBP (até 5MB)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pré-visualização da Fotografia -->
+                <div
+                    class="flex flex-col items-center justify-center border border-rg-rose/20 bg-rg-dark p-2 aspect-[4/5] rounded">
+                    <span class="text-[9px] uppercase tracking-wider text-gray-500 mb-2">Pré-visualização</span>
+
+                    <img *ngIf="imagePreview()" [src]="imagePreview()" alt="Pré-visualização do produto"
+                        class="w-full h-full object-cover border border-rg-rose/30" />
+
+                    <div *ngIf="!imagePreview()" class="text-[10px] text-gray-500 text-center px-4">
+                        Nenhuma imagem selecionada
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de Gravação -->
+            <div class="pt-6 border-t border-rg-rose/20 flex justify-end">
+                <button type="submit" [disabled]="loading()"
+                    class="px-8 py-3 bg-rg-rose text-rg-dark font-semibold text-xs tracking-[0.2em] uppercase border border-rg-rose hover:bg-transparent hover:text-rg-rose transition-all duration-300 disabled:opacity-40">
+                    {{ loading() ? 'A Gravar...' : 'Gravar Artigo no Catálogo' }}
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</section>

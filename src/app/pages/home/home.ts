@@ -47,7 +47,7 @@ export class Home {
       tag: 'Mais Vendida',
       price: 189.90,
       installments: '3x de R$ 63,30 sem juros',
-      image: 'assets/performance-collection.jpg'
+      image: 'performance-collection.jpg'
     },
     {
       id: 2,
@@ -56,7 +56,7 @@ export class Home {
       tag: 'Zero Transparência',
       price: 129.90,
       installments: '2x de R$ 64,95 sem juros',
-      image: 'assets/performance-collection.jpg'
+      image: 'performance-collection.jpg'
     },
     {
       id: 3,
@@ -65,7 +65,7 @@ export class Home {
       tag: 'Hipoalergênico',
       price: 159.90,
       installments: '3x de R$ 53,30 sem juros',
-      image: 'assets/elegance-collection.jpg'
+      image: 'elegance-collection.jpg'
     },
     {
       id: 4,
@@ -74,7 +74,7 @@ export class Home {
       tag: 'Exclusivo',
       price: 89.90,
       installments: '2x de R$ 44,95 sem juros',
-      image: 'assets/elegance-collection.jpg'
+      image: 'elegance-collection.jpg'
     }
   ]);
 

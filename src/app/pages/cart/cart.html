@@ -29,7 +29,7 @@
                     class="flex flex-col sm:flex-row gap-5 p-5 bg-rg-surface border border-rg-rose/20 items-center justify-between">
 
                     <div class="flex items-center gap-4 w-full sm:w-auto">
-                        <img [src]="item.product.category?.name === 'FITNESS' ? 'assets/performance-collection.jpg' : 'assets/elegance-collection.jpg'"
+                        <img [src]="getImageUrl(item.product.imageUrl)" (error)="onImageError($event, item.product.category?.name)"
                             [alt]="item.product.name" class="w-20 h-24 object-cover border border-rg-rose/20" />
                         <div>
                             <span class="text-[9px] uppercase tracking-widest text-rg-rose">{{

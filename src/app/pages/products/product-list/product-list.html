@@ -65,7 +65,7 @@
                 <!-- Foto do Produto -->
                 <a [routerLink]="['/produtos', product.id]"
                     class="relative aspect-[4/5] bg-black/40 overflow-hidden block">
-                    <img src="assets/performance-collection.jpg" [alt]="product.name"
+                    <img [src]="getImageUrl(product.imageUrl)" (error)="onImageError($event, product.category?.name)" [alt]="product.name"
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
 
                     <span

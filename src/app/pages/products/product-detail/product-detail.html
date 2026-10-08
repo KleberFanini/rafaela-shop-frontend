@@ -27,7 +27,7 @@
 
             <!-- Coluna Visual / Foto -->
             <div class="relative bg-rg-surface border border-rg-rose/20 overflow-hidden aspect-[4/5] shadow-2xl">
-                <img [src]="product()?.category?.name === 'FITNESS' ? 'assets/performance-collection.jpg' : 'assets/elegance-collection.jpg'"
+                <img [src]="getImageUrl(product()?.imageUrl)" (error)="onImageError($event, product()?.category?.name)"
                     [alt]="product()?.name" class="w-full h-full object-cover" />
 
                 <span

@@ -92,4 +92,30 @@ export class ProductDetail implements OnInit {
 
     this.router.navigate(['/carrinho']);
   }
+
+  getImageUrl(imageUrl?: string | null): string {
+    if (!imageUrl) {
+      return 'performance-collection.jpg';
+    }
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+    if (imageUrl.startsWith('/api/uploads/')) {
+      return `http://localhost:8080${imageUrl}`;
+    }
+    if (imageUrl.startsWith('uploads/')) {
+      return `http://localhost:8080/api/${imageUrl}`;
+    }
+    if (!imageUrl.includes('/')) {
+      return `http://localhost:8080/api/uploads/${imageUrl}`;
+    }
+    return imageUrl;
+  }
+
+  onImageError(event: Event, categoryName?: string): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = categoryName === 'SEMIJOIAS' ? 'elegance-collection.jpg' : 'performance-collection.jpg';
+    }
+  }
 }

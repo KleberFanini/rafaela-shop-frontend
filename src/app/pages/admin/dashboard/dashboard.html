@@ -1,1 +1,100 @@
-<p>dashboard works!</p>
+<section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8 lg:px-12">
+    <div class="max-w-[1300px] mx-auto space-y-10">
+
+        <!-- Cabeçalho do Painel -->
+        <header
+            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-rg-rose/20 pb-6">
+            <div>
+                <p class="text-[10px] tracking-[0.35em] text-rg-rose uppercase">Gestão Interna</p>
+                <h1 class="font-serif text-3xl sm:text-4xl text-gray-100 mt-1">Painel do Administrador</h1>
+            </div>
+
+            <div class="flex gap-3">
+                <a routerLink="/admin/produtos/novo"
+                    class="px-5 py-2.5 bg-rg-rose text-rg-dark text-xs uppercase tracking-wider font-semibold border border-rg-rose hover:bg-transparent hover:text-rg-rose transition-all">
+                    + Cadastrar Produto
+                </a>
+                <a routerLink="/admin/pedidos"
+                    class="px-5 py-2.5 border border-rg-rose/40 text-rg-rose text-xs uppercase tracking-wider font-semibold hover:border-rg-rose hover:bg-rg-rose/10 transition-all">
+                    Ver Pedidos
+                </a>
+            </div>
+        </header>
+
+        <!-- Cards de Métricas Principais -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="p-6 bg-rg-surface border border-rg-rose/20">
+                <p class="text-[11px] uppercase tracking-wider text-gray-400">Receita Bruta</p>
+                <p class="font-serif text-3xl text-rg-rose mt-2">R$ {{ totalRevenue().toFixed(2) }}</p>
+                <span class="text-[10px] text-emerald-400 mt-1 block">↑ 12% em relação à última semana</span>
+            </div>
+
+            <div class="p-6 bg-rg-surface border border-rg-rose/20">
+                <p class="text-[11px] uppercase tracking-wider text-gray-400">Total de Pedidos</p>
+                <p class="font-serif text-3xl text-gray-100 mt-2">{{ totalOrders() }}</p>
+                <span class="text-[10px] text-gray-400 mt-1 block">4 pedidos aguardando envio</span>
+            </div>
+
+            <div class="p-6 bg-rg-surface border border-rg-rose/20">
+                <p class="text-[11px] uppercase tracking-wider text-gray-400">Catálogo Ativo</p>
+                <p class="font-serif text-3xl text-gray-100 mt-2">{{ products().length }} produtos</p>
+                <span class="text-[10px] text-amber-400 mt-1 block">{{ lowStockItems().length }} com estoque
+                    baixo</span>
+            </div>
+        </div>
+
+        <!-- Tabela / Alertas de Estoque Baixo -->
+        <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="font-serif text-xl text-gray-100">Atenção ao Estoque</h2>
+                <span class="text-[11px] text-rg-rose uppercase tracking-wider font-medium">Itens com ≤ 3
+                    unidades</span>
+            </div>
+
+            <div *ngIf="loading()" class="py-8 text-center text-rg-rose text-xs tracking-widest animate-pulse">
+                CARREGANDO ITENS...
+            </div>
+
+            <div *ngIf="!loading() && lowStockItems().length === 0" class="py-8 text-center text-gray-400 text-xs">
+                Todos os produtos estão com níveis saudáveis de estoque.
+            </div>
+
+            <div *ngIf="!loading() && lowStockItems().length > 0" class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="border-b border-rg-rose/20 text-rg-rose uppercase text-[10px] tracking-wider">
+                        <tr>
+                            <th class="py-3 px-4">Produto</th>
+                            <th class="py-3 px-4">Categoria</th>
+                            <th class="py-3 px-4">Preço</th>
+                            <th class="py-3 px-4">Variações Críticas</th>
+                            <th class="py-3 px-4 text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-rg-rose/10">
+                        <tr *ngFor="let prod of lowStockItems()" class="hover:bg-rg-dark/40 transition-colors">
+                            <td class="py-4 px-4 font-medium text-gray-100">{{ prod.name }}</td>
+                            <td class="py-4 px-4 text-gray-400">{{ prod.category?.name }}</td>
+                            <td class="py-4 px-4 font-serif text-rg-rose">R$ {{ prod.price.toFixed(2) }}</td>
+                            <td class="py-4 px-4">
+                                <div class="flex flex-wrap gap-1.5">
+                                    <span *ngFor="let v of prod.variants" [class.text-red-400]="v.stock <= 1"
+                                        [class.text-amber-400]="v.stock > 1 && v.stock <= 3"
+                                        class="bg-rg-dark px-2 py-0.5 border border-rg-rose/20 text-[10px]">
+                                        {{ v.size || v.color }}: {{ v.stock }} un.
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4 text-right">
+                                <a [routerLink]="['/produtos', prod.id]"
+                                    class="text-rg-rose hover:underline text-[11px] uppercase tracking-wider">
+                                    Ver Peça
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>

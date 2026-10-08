@@ -1,0 +1,123 @@
+<header class="fixed inset-x-0 top-0 z-50 border-b border-rg-rose/20 bg-rg-dark/90 backdrop-blur-xl transition-all">
+    <div class="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
+
+        <!-- Logo / Marca -->
+        <a routerLink="/" class="flex flex-col" aria-label="Página inicial Rafaela Gamero">
+            <span class="font-serif text-lg tracking-[0.16em] sm:text-xl text-rg-rose font-medium">
+                RAFAELA GAMERO
+            </span>
+            <span class="text-[8px] uppercase tracking-[0.3em] text-rg-roseLight/70 -mt-1 hidden sm:block">
+                Fitness &bull; Luxury
+            </span>
+        </a>
+
+        <!-- Links de Navegação Desktop -->
+        <nav class="hidden items-center gap-8 lg:flex" aria-label="Navegação principal">
+            <a *ngFor="let link of navLinks" [routerLink]="link.route" [queryParams]="link.queryParams"
+                [fragment]="link.fragment"
+                class="text-[11px] font-medium tracking-[0.22em] text-gray-300 transition-colors hover:text-rg-rose">
+                {{ link.label }}
+            </a>
+        </nav>
+
+        <!-- Ações e Ícones à Direita -->
+        <div class="flex items-center gap-2 sm:gap-3">
+
+            <!-- Botão de Pesquisa -->
+            <button type="button" (click)="toggleSearch()" aria-label="Abrir pesquisa"
+                class="p-2 text-gray-300 hover:text-rg-rose transition-colors relative">
+                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                        d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+
+            <!-- Minha Conta / Painel Admin -->
+            <a routerLink="/admin" title="Área do Produtor / Painel"
+                class="p-2 text-gray-300 hover:text-rg-rose transition-colors hidden sm:block">
+                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </a>
+
+            <!-- Sacola de Compras / Carrinho com Contador -->
+            <a routerLink="/carrinho" aria-label="Ver carrinho de compras"
+                class="p-2 text-gray-300 hover:text-rg-rose transition-colors relative">
+                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+
+                <!-- Contador de Itens -->
+                <span *ngIf="cartCount() > 0"
+                    class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rg-rose text-[9px] font-bold text-rg-dark">
+                    {{ cartCount() }}
+                </span>
+            </a>
+
+            <!-- Botão Hambúrguer Mobile -->
+            <button type="button" (click)="toggleMenu()"
+                class="p-2 text-gray-300 hover:text-rg-rose transition-colors lg:hidden"
+                [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'">
+                <svg *ngIf="!menuOpen()" class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                        d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg *ngIf="menuOpen()" class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Barra de Busca Expansível -->
+    <div *ngIf="searchOpen()" class="border-y border-rg-rose/20 bg-rg-dark/95 px-6 py-5 shadow-2xl backdrop-blur-2xl">
+        <div class="mx-auto max-w-2xl">
+            <form (submit)="performSearch(); $event.preventDefault()"
+                class="flex items-center gap-3 border-b border-rg-rose pb-2">
+                <svg class="size-5 text-rg-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                        d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input autofocus [(ngModel)]="searchQuery" name="search"
+                    placeholder="Buscar leggings, tops, semijoias..."
+                    class="w-full bg-transparent text-sm text-gray-100 outline-none placeholder:text-gray-500" />
+                <button type="button" (click)="toggleSearch()"
+                    class="text-xs uppercase text-gray-400 hover:text-rg-rose">
+                    Fechar
+                </button>
+            </form>
+
+            <!-- Sugestões Rápidas -->
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-gray-400">
+                <span class="text-gray-500 uppercase tracking-wider text-[9px]">Populares:</span>
+                <button *ngFor="let term of quickSearches" type="button" (click)="searchKeyword(term)"
+                    class="rounded-full border border-rg-rose/20 bg-rg-surface px-2.5 py-0.5 text-gray-300 hover:border-rg-rose hover:text-rg-rose transition-colors">
+                    {{ term }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gaveta de Links Mobile -->
+    <nav *ngIf="menuOpen()" class="border-t border-rg-rose/20 bg-rg-dark px-6 py-8 shadow-2xl lg:hidden"
+        aria-label="Navegação mobile">
+        <div class="flex flex-col gap-6">
+            <a *ngFor="let link of navLinks" [routerLink]="link.route" [queryParams]="link.queryParams"
+                [fragment]="link.fragment" (click)="closeMenu()"
+                class="text-xs uppercase tracking-[0.25em] text-gray-200 hover:text-rg-rose transition-colors">
+                {{ link.label }}
+            </a>
+
+            <div class="my-2 h-px w-full bg-rg-rose/20"></div>
+
+            <a routerLink="/admin" (click)="closeMenu()"
+                class="text-xs uppercase tracking-[0.25em] text-rg-rose flex items-center gap-2">
+                <span>Painel do Produtor</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </nav>
+</header>

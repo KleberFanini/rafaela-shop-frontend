@@ -1,0 +1,199 @@
+<main class="min-h-screen bg-rg-dark text-gray-200">
+
+    <!-- Faixa de Benefícios / Frete no Topo -->
+    <aside
+        class="bg-rg-surface border-b border-rg-rose/20 text-center py-2 px-4 text-[11px] uppercase tracking-[0.2em] text-rg-roseLight flex items-center justify-center gap-3">
+        <span>✨ FRETE GRÁTIS PARA COMPRAS ACIMA DE R$ 299</span>
+        <span class="text-rg-rose hidden sm:inline">•</span>
+        <span class="hidden sm:inline">PARCELAMENTO EM ATÉ 6X SEM JUROS</span>
+        <span class="text-rg-rose hidden md:inline">•</span>
+        <span class="hidden md:inline">5% OFF NO PIX</span>
+    </aside>
+
+    <!-- Seção Hero Principal -->
+    <section id="top" class="relative flex min-h-[88svh] items-center justify-center overflow-hidden">
+        <img [src]="heroTexture" alt="Tecido acetinado e performance luxuoso"
+            class="absolute inset-0 h-full w-full object-cover" />
+        <div class="absolute inset-0 bg-rg-dark/50"></div>
+        <div class="absolute inset-y-0 left-1/2 w-px bg-rg-rose/20"></div>
+
+        <span
+            class="animate-pulse absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-[42vw] leading-none text-rg-rose/5 sm:text-[28vw] select-none pointer-events-none">
+            RG
+        </span>
+
+        <div class="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center px-6 text-center">
+            <img [src]="logoAsset" alt="Monograma Rafaela Gamero"
+                class="mb-3 w-64 mix-blend-screen sm:w-80 lg:w-[22rem]" />
+
+            <h1 class="sr-only">Rafaela Gamero - Moda Fitness e Semijoias</h1>
+
+            <p class="mb-8 text-[11px] tracking-[0.35em] text-gray-300 sm:text-xs sm:tracking-[0.45em]">
+                FITNESS <span class="px-2 text-rg-rose">◆</span> ESTILO DE VIDA <span class="px-2 text-rg-rose">◆</span>
+                LUXO
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <a routerLink="/produtos" [queryParams]="{ category: 'FITNESS' }"
+                    class="px-8 py-3 border border-rg-rose bg-rg-rose text-rg-dark hover:bg-transparent hover:text-rg-rose text-xs tracking-[0.25em] font-semibold transition-all duration-300">
+                    COMPRAR MODA FITNESS
+                </a>
+                <a routerLink="/produtos" [queryParams]="{ category: 'SEMIJOIAS' }"
+                    class="px-8 py-3 border border-rg-rose text-rg-rose hover:bg-rg-rose hover:text-rg-dark text-xs tracking-[0.25em] transition-all duration-300">
+                    EXPLORAR SEMIJOIAS
+                </a>
+            </div>
+        </div>
+
+        <div
+            class="absolute bottom-5 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[9px] tracking-[0.28em] text-gray-400">
+            <span>DESCUBRA A COLEÇÃO</span>
+            <span class="h-8 w-px bg-rg-rose/60"></span>
+        </div>
+    </section>
+
+    <!-- Réguas de Vantagens da Loja -->
+    <section class="border-y border-rg-rose/20 bg-rg-surface py-6 px-6">
+        <div class="mx-auto max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="flex flex-col items-center">
+                <span class="text-rg-rose mb-1 text-lg">✦</span>
+                <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-200">Zero Transparência</h2>
+                <p class="text-[11px] text-gray-400 mt-1">Tecidos de alta densidade e segurança no agachamento</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-rg-rose mb-1 text-lg">◈</span>
+                <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-200">Banho Antialérgico</h2>
+                <p class="text-[11px] text-gray-400 mt-1">Semijoias resistentes com acabamento antialérgico</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-rg-rose mb-1 text-lg">❖</span>
+                <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-200">Primeira Troca Grátis</h2>
+                <p class="text-[11px] text-gray-400 mt-1">Até 7 dias após o recebimento sem complicações</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-rg-rose mb-1 text-lg">✪</span>
+                <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-200">Envio para Todo o Brasil</h2>
+                <p class="text-[11px] text-gray-400 mt-1">Rastreio detalhado via Correios e transportadoras</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorias Rápidas -->
+    <section class="py-16 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-10">
+            <p class="text-[10px] tracking-[0.3em] text-rg-rose uppercase">Navegue por Categoria</p>
+            <h2 class="font-serif text-2xl sm:text-3xl text-gray-100 mt-1">Encontre o seu estilo</h2>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <a *ngFor="let cat of quickCategories" routerLink="/produtos" [queryParams]="{ type: cat.filter }"
+                class="group border border-rg-rose/20 bg-rg-surface p-4 rounded text-center transition-all duration-300 hover:border-rg-rose hover:-translate-y-1">
+                <div
+                    class="w-10 h-10 mx-auto mb-3 rounded-full bg-rg-dark flex items-center justify-center text-rg-rose group-hover:bg-rg-rose group-hover:text-rg-dark transition-colors">
+                    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" [attr.d]="cat.icon" />
+                    </svg>
+                </div>
+                <span class="text-xs uppercase tracking-wider text-gray-300 group-hover:text-rg-rose font-medium block">
+                    {{ cat.label }}
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Vitrine de Produtos em Destaque -->
+    <section id="destaques" class="py-14 bg-rg-surface border-y border-rg-rose/20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-10">
+                <div>
+                    <p class="text-[10px] tracking-[0.3em] text-rg-rose uppercase">Lançamentos Exclusivos</p>
+                    <h2 class="font-serif text-3xl text-gray-100 mt-1">Mais Desejados da Temporada</h2>
+                </div>
+                <a routerLink="/produtos"
+                    class="mt-4 sm:mt-0 text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1">
+                    VER TODO O CATÁLOGO &rarr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div *ngFor="let item of featuredProducts()"
+                    class="group bg-rg-dark border border-rg-rose/20 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-rg-rose/60">
+
+                    <!-- Imagem e Tag -->
+                    <div class="relative overflow-hidden aspect-[4/5] bg-black/40">
+                        <img [src]="item.image" [alt]="item.name"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <span
+                            class="absolute top-3 left-3 bg-rg-dark/85 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1">
+                            {{ item.tag }}
+                        </span>
+                    </div>
+
+                    <!-- Informações de Compra -->
+                    <div class="p-5 flex flex-col flex-grow justify-between">
+                        <div>
+                            <span class="text-[9px] uppercase tracking-widest text-gray-400 block mb-1">
+                                {{ item.category === 'FITNESS' ? 'Moda Fitness' : 'Semijoia de Luxo' }}
+                            </span>
+                            <h3
+                                class="text-sm font-medium text-gray-200 group-hover:text-rg-rose transition-colors line-clamp-1">
+                                {{ item.name }}
+                            </h3>
+                            <p class="text-lg font-serif text-rg-rose mt-2">
+                                R$ {{ item.price.toFixed(2) }}
+                            </p>
+                            <p class="text-[11px] text-gray-400">
+                                {{ item.installments }}
+                            </p>
+                        </div>
+
+                        <button [routerLink]="['/produtos', item.id]"
+                            class="mt-5 w-full py-2.5 border border-rg-rose/50 text-rg-rose hover:bg-rg-rose hover:text-rg-dark text-[10px] tracking-[0.2em] uppercase transition-all duration-300 font-semibold">
+                            Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Editorial: O Conceito Duplo (Fitness + Semijoia) -->
+    <section class="py-20 px-6 max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+            <div class="relative">
+                <img [src]="performanceImage" alt="Coleção Fitness Rafaela Gamero"
+                    class="w-full rounded border border-rg-rose/20 shadow-2xl" />
+                <div
+                    class="absolute -bottom-6 -right-6 hidden sm:block w-52 p-4 bg-rg-surface border border-rg-rose shadow-xl">
+                    <p class="text-[10px] tracking-widest text-rg-rose uppercase">Combo Sugerido</p>
+                    <p class="text-xs text-gray-200 mt-1 font-serif">Look Treino + Argola Banhada</p>
+                    <span class="text-[10px] text-gray-400">Eleve a presença no treino</span>
+                </div>
+            </div>
+
+            <div class="lg:pl-8">
+                <p class="text-[10px] tracking-[0.3em] text-rg-rose uppercase">A Proposta da Marca</p>
+                <h2 class="font-serif text-3xl sm:text-4xl text-gray-100 mt-2 leading-snug">
+                    O poder do treino aliado à sofisticação das joias.
+                </h2>
+                <p class="mt-6 text-sm text-gray-400 leading-relaxed">
+                    Criamos a Rafaela Gamero para a mulher contemporânea que não abre mão da força nem do requinte.
+                    Unimos tecidos tecnológicos modeladores para máxima performance com o brilho atemporal de semijoias
+                    cuidadosamente selecionadas.
+                </p>
+
+                <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                    <a routerLink="/produtos" [queryParams]="{ category: 'FITNESS' }"
+                        class="text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 self-start">
+                        CONHECER A LINHA FITNESS &rarr;
+                    </a>
+                    <a routerLink="/produtos" [queryParams]="{ category: 'SEMIJOIAS' }"
+                        class="text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 self-start sm:ml-6">
+                        CONHECER AS SEMIJOIAS &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>

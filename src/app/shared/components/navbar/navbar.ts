@@ -1,21 +1,26 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CartService } from '../../../core/services/cart';
 
 @Component({
   selector: 'app-navbar',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar {
+  private router = inject(Router);
+  private cartService = inject(CartService);
+
   menuOpen = signal(false);
   searchOpen = signal(false);
   searchQuery = signal('');
 
-  // Quantidade de itens no carrinho para exibir na badge
-  cartCount = signal(0);
+  // Agora this.cartService já existe no momento da atribuição
+  cartCount = this.cartService.totalItemsCount;
 
   navLinks = [
     { label: 'NOVIDADES', route: '/produtos', queryParams: { sort: 'latest' } },
@@ -25,8 +30,6 @@ export class Navbar {
   ];
 
   quickSearches = ['Legging Glow', 'Top Esculpido', 'Colar 18k', 'Brinco Argola'];
-
-  constructor(private router: Router) { }
 
   toggleMenu() {
     this.menuOpen.update((v) => !v);

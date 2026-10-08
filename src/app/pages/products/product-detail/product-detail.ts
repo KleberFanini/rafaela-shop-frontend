@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ProductService } from '../../../core/services/product';
 import { Product, ProductVariant } from '../../../shared/models/ecommerce.models';
+import { CartService } from '../../../core/services/cart';
 
 @Component({
   selector: 'app-product-detail',
@@ -20,7 +21,8 @@ export class ProductDetail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) { }
 
   ngOnInit(): void {
@@ -86,7 +88,8 @@ export class ProductDetail implements OnInit {
       return;
     }
 
-    // Redireciona para o carrinho
+    this.cartService.addItem(prod, variant || undefined, this.quantity());
+
     this.router.navigate(['/carrinho']);
   }
 }

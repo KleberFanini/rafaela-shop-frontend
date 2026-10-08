@@ -1,1 +1,130 @@
-<p>product-detail works!</p>
+<section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8 lg:px-12">
+    <div class="max-w-[1300px] mx-auto">
+
+        <!-- Navegação de Retorno -->
+        <nav class="mb-8 flex items-center gap-2 text-xs uppercase tracking-widest text-gray-400">
+            <a routerLink="/produtos" class="hover:text-rg-rose transition-colors">Produtos</a>
+            <span>/</span>
+            <span class="text-rg-rose">{{ product()?.name || 'Detalhes' }}</span>
+        </nav>
+
+        <!-- Estado: Carregando -->
+        <div *ngIf="loading()" class="py-24 text-center text-rg-rose tracking-widest text-sm animate-pulse">
+            CARREGANDO PRODUTO...
+        </div>
+
+        <!-- Estado: Erro -->
+        <div *ngIf="!loading() && error()" class="py-20 text-center border border-rg-rose/20 bg-rg-surface p-8">
+            <p class="font-serif text-xl text-gray-300">{{ error() }}</p>
+            <a routerLink="/produtos"
+                class="mt-6 inline-block px-6 py-2 border border-rg-rose text-rg-rose text-xs uppercase tracking-widest hover:bg-rg-rose hover:text-rg-dark transition-colors">
+                Voltar ao Catálogo
+            </a>
+        </div>
+
+        <!-- Conteúdo Principal do Produto -->
+        <div *ngIf="!loading() && product()" class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
+            <!-- Coluna Visual / Foto -->
+            <div class="relative bg-rg-surface border border-rg-rose/20 overflow-hidden aspect-[4/5] shadow-2xl">
+                <img [src]="product()?.category?.name === 'FITNESS' ? 'assets/performance-collection.jpg' : 'assets/elegance-collection.jpg'"
+                    [alt]="product()?.name" class="w-full h-full object-cover" />
+
+                <span
+                    class="absolute top-4 left-4 bg-rg-dark/85 border border-rg-rose/30 text-[10px] uppercase tracking-widest text-rg-rose px-3 py-1">
+                    {{ product()?.category?.name }}
+                </span>
+            </div>
+
+            <!-- Coluna de Informações e Compra -->
+            <div class="flex flex-col justify-start">
+                <p class="text-[10px] tracking-[0.35em] text-rg-rose uppercase">Rafaela Gamero Exclusive</p>
+                <h1 class="font-serif text-3xl sm:text-4xl text-gray-100 mt-2 leading-tight">
+                    {{ product()?.name }}
+                </h1>
+
+                <!-- Preço e Parcelamento -->
+                <div class="mt-4 pb-6 border-b border-rg-rose/20">
+                    <p class="font-serif text-2xl sm:text-3xl text-rg-rose">
+                        R$ {{ product()?.price?.toFixed(2) }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        ou até 3x de R$ {{ ((product()?.price || 0) / 3).toFixed(2) }} sem juros
+                    </p>
+                </div>
+
+                <!-- Descrição -->
+                <p class="text-sm text-gray-300 font-light leading-relaxed mt-6">
+                    {{ product()?.description }}
+                </p>
+
+                <!-- Seletor de Variações -->
+                <div *ngIf="product()?.variants && product()!.variants.length > 0" class="mt-8">
+                    <label class="text-xs uppercase tracking-widest text-gray-300 block mb-3 font-medium">
+                        Selecione a Opção / Tamanho:
+                    </label>
+
+                    <div class="flex flex-wrap gap-3">
+                        <button *ngFor="let v of product()?.variants" type="button" (click)="selectVariant(v)"
+                            [class.border-rg-rose]="selectedVariant()?.id === v.id"
+                            [class.bg-rg-rose]="selectedVariant()?.id === v.id"
+                            [class.text-rg-dark]="selectedVariant()?.id === v.id"
+                            class="px-4 py-2 text-xs uppercase tracking-wider border border-rg-rose/30 bg-rg-surface hover:border-rg-rose transition-all flex items-center gap-2">
+                            <span>{{ v.size || v.color || 'Padrão' }}</span>
+                            <span class="text-[10px] opacity-75">({{ v.stock }} unid.)</span>
+                        </button>
+                    </div>
+
+                    <!-- Aviso de Estoque Baixo -->
+                    <p *ngIf="selectedVariant() && selectedVariant()!.stock <= 3 && selectedVariant()!.stock > 0"
+                        class="text-[11px] text-amber-400 mt-3 flex items-center gap-1.5">
+                        <span>⚠</span> Restam apenas {{ selectedVariant()!.stock }} unidades desta variação!
+                    </p>
+                    <p *ngIf="selectedVariant() && selectedVariant()!.stock === 0"
+                        class="text-[11px] text-red-400 mt-3">
+                        ✕ Esgotado no momento.
+                    </p>
+                </div>
+
+                <!-- Quantidade e Botão Comprar -->
+                <div class="mt-10 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+
+                    <!-- Contador de Quantidade -->
+                    <div
+                        class="flex items-center border border-rg-rose/30 bg-rg-surface h-12 w-32 justify-between px-3">
+                        <button type="button" (click)="decreaseQuantity()"
+                            class="text-gray-300 hover:text-rg-rose text-base font-semibold px-2">
+                            -
+                        </button>
+                        <span class="text-sm font-medium text-gray-100">{{ quantity() }}</span>
+                        <button type="button" (click)="increaseQuantity()"
+                            class="text-gray-300 hover:text-rg-rose text-base font-semibold px-2">
+                            +
+                        </button>
+                    </div>
+
+                    <!-- Botão de Compra -->
+                    <button type="button" (click)="addToCart()" [disabled]="selectedVariant()?.stock === 0"
+                        class="flex-1 h-12 px-8 bg-rg-rose text-rg-dark border border-rg-rose font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <span>{{ selectedVariant()?.stock === 0 ? 'Indisponível' : 'Adicionar à Sacola' }}</span>
+                    </button>
+                </div>
+
+                <!-- Selos de Confiança -->
+                <div class="mt-10 pt-6 border-t border-rg-rose/10 grid grid-cols-2 gap-4 text-[11px] text-gray-400">
+                    <div class="flex items-center gap-2">
+                        <span class="text-rg-rose">✦</span>
+                        <span>Garantia de Qualidade</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-rg-rose">◈</span>
+                        <span>Primeira Troca Grátis</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>

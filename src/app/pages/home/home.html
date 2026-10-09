@@ -90,9 +90,12 @@
                 class="group border border-rg-rose/20 bg-rg-surface p-4 rounded text-center transition-all duration-300 hover:border-rg-rose hover:-translate-y-1">
                 <div
                     class="w-10 h-10 mx-auto mb-3 rounded-full bg-rg-dark flex items-center justify-center text-rg-rose group-hover:bg-rg-rose group-hover:text-rg-dark transition-colors">
-                    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" [attr.d]="cat.icon" />
-                    </svg>
+                    <svg *ngIf="cat.filter === 'leggings'" lucideFlame class="size-5"></svg>
+                    <svg *ngIf="cat.filter === 'tops'" lucideShirt class="size-5"></svg>
+                    <svg *ngIf="cat.filter === 'conjuntos'" lucideLayers class="size-5"></svg>
+                    <svg *ngIf="cat.filter === 'colares'" lucideGem class="size-5"></svg>
+                    <svg *ngIf="cat.filter === 'brincos'" lucideCircleDot class="size-5"></svg>
+                    <svg *ngIf="cat.filter === 'aneis'" lucideCircle class="size-5"></svg>
                 </div>
                 <span class="text-xs uppercase tracking-wider text-gray-300 group-hover:text-rg-rose font-medium block">
                     {{ cat.label }}
@@ -101,59 +104,110 @@
         </div>
     </section>
 
-    <!-- Vitrine de Produtos em Destaque -->
-    <section id="destaques" class="py-14 bg-rg-surface border-y border-rg-rose/20 px-6">
+    <!-- Vitrine de Produtos em Destaque (Carrossel) -->
+    <section id="destaques" class="py-14 bg-rg-surface border-y border-rg-rose/20 px-4 sm:px-6 relative">
         <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col sm:flex-row justify-between items-end mb-10">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-8">
                 <div>
                     <p class="text-[10px] tracking-[0.3em] text-rg-rose uppercase">Lançamentos Exclusivos</p>
                     <h2 class="font-serif text-3xl text-gray-100 mt-1">Mais Desejados da Temporada</h2>
                 </div>
+
                 <a routerLink="/produtos"
-                    class="mt-4 sm:mt-0 text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1">
-                    VER TODO O CATÁLOGO &rarr;
+                    class="mt-4 sm:mt-0 text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 flex items-center gap-1">
+                    <span>VER TODO O CATÁLOGO</span>
+                    <svg lucideArrowRight class="size-4"></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div *ngFor="let item of featuredProducts()"
-                    class="group bg-rg-dark border border-rg-rose/20 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-rg-rose/60">
+            <!-- Indicador de Carregamento -->
+            <div *ngIf="loading()" class="py-12 text-center text-rg-rose tracking-widest text-xs animate-pulse">
+                CARREGANDO DESTAQUES...
+            </div>
 
-                    <!-- Imagem e Tag -->
-                    <div class="relative overflow-hidden aspect-[4/5] bg-black/40">
-                        <img [src]="item.image" [alt]="item.name"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                        <span
-                            class="absolute top-3 left-3 bg-rg-dark/85 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1">
-                            {{ item.tag }}
-                        </span>
-                    </div>
+            <!-- Área dos Produtos com Seta Esquerda na esquerda e Seta Direita na direita -->
+            <div *ngIf="!loading() && featuredProducts().length > 0" 
+                class="flex items-center gap-2 sm:gap-4 relative"
+                (mouseenter)="stopAutoPlay()"
+                (mouseleave)="startAutoPlay()">
 
-                    <!-- Informações de Compra -->
-                    <div class="p-5 flex flex-col flex-grow justify-between">
-                        <div>
-                            <span class="text-[9px] uppercase tracking-widest text-gray-400 block mb-1">
-                                {{ item.category === 'FITNESS' ? 'Moda Fitness' : 'Semijoia de Luxo' }}
-                            </span>
-                            <h3
-                                class="text-sm font-medium text-gray-200 group-hover:text-rg-rose transition-colors line-clamp-1">
-                                {{ item.name }}
-                            </h3>
-                            <p class="text-lg font-serif text-rg-rose mt-2">
-                                R$ {{ item.price.toFixed(2) }}
-                            </p>
-                            <p class="text-[11px] text-gray-400">
-                                {{ item.installments }}
-                            </p>
+                <!-- Seta Esquerda (Lucide Chevron Left) -->
+                <button *ngIf="featuredProducts().length > 3" type="button" (click)="manualPrev()"
+                    class="shrink-0 size-11 rounded-full border border-rg-rose/40 text-rg-rose bg-rg-dark/90 hover:bg-rg-rose hover:text-rg-dark transition-all duration-300 flex items-center justify-center shadow-xl cursor-pointer z-10 hover:scale-105"
+                    title="Anterior">
+                    <svg lucideChevronLeft class="size-5"></svg>
+                </button>
+
+                <!-- Viewport do Carrossel -->
+                <div class="overflow-hidden flex-1">
+                    <div class="flex transition-transform duration-500 ease-out"
+                        [style.transform]="'translateX(-' + (currentSlide() * 100) + '%)'">
+
+                        <div *ngFor="let item of featuredProducts()"
+                            class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-2 sm:px-3">
+
+                            <div class="group bg-rg-dark border border-rg-rose/20 rounded overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:border-rg-rose/60">
+
+                                <!-- Imagem e Categoria -->
+                                <div class="relative overflow-hidden aspect-[4/5] bg-black/40">
+                                    <img [src]="getImageUrl(item.imageUrl, item.category?.name)" (error)="onImageError($event, item.category?.name)" [alt]="item.name"
+                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    <span
+                                        class="absolute top-3 left-3 bg-rg-dark/85 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1">
+                                        {{ item.category?.name || 'Exclusivo' }}
+                                    </span>
+                                </div>
+
+                                <!-- Informações de Compra -->
+                                <div class="p-5 flex flex-col flex-grow justify-between">
+                                    <div>
+                                        <span class="text-[9px] uppercase tracking-widest text-gray-400 block mb-1">
+                                            {{ item.category?.name === 'FITNESS' ? 'Moda Fitness' : 'Semijoia de Luxo' }}
+                                        </span>
+                                        <h3
+                                            class="text-sm font-medium text-gray-200 group-hover:text-rg-rose transition-colors line-clamp-1">
+                                            {{ item.name }}
+                                        </h3>
+                                        <p class="text-lg font-serif text-rg-rose mt-2">
+                                            R$ {{ item.price.toFixed(2) }}
+                                        </p>
+                                        <p class="text-[11px] text-gray-400">
+                                            {{ getInstallments(item.price) }}
+                                        </p>
+                                    </div>
+
+                                    <button [routerLink]="['/produtos', item.id]"
+                                        class="mt-5 w-full py-2.5 border border-rg-rose/50 text-rg-rose hover:bg-rg-rose hover:text-rg-dark text-[10px] tracking-[0.2em] uppercase transition-all duration-300 font-semibold">
+                                        Ver Detalhes
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <button [routerLink]="['/produtos', item.id]"
-                            class="mt-5 w-full py-2.5 border border-rg-rose/50 text-rg-rose hover:bg-rg-rose hover:text-rg-dark text-[10px] tracking-[0.2em] uppercase transition-all duration-300 font-semibold">
-                            Ver Detalhes
-                        </button>
                     </div>
                 </div>
+
+                <!-- Seta Direita (Lucide Chevron Right) -->
+                <button *ngIf="featuredProducts().length > 3" type="button" (click)="manualNext()"
+                    class="shrink-0 size-11 rounded-full border border-rg-rose/40 text-rg-rose bg-rg-dark/90 hover:bg-rg-rose hover:text-rg-dark transition-all duration-300 flex items-center justify-center shadow-xl cursor-pointer z-10 hover:scale-105"
+                    title="Próximo">
+                    <svg lucideChevronRight class="size-5"></svg>
+                </button>
+
             </div>
+
+            <!-- Indicadores de Pontos (Pagination Dots) -->
+            <div *ngIf="!loading() && slidePages().length > 1" class="flex justify-center items-center gap-2 mt-8">
+                <button *ngFor="let page of slidePages()" type="button" (click)="goToSlide(page)"
+                    [class.bg-rg-rose]="currentSlide() === page"
+                    [class.w-8]="currentSlide() === page"
+                    [class.w-2.5]="currentSlide() !== page"
+                    class="h-2.5 rounded-full bg-rg-rose/30 hover:bg-rg-rose transition-all duration-300"
+                    [attr.aria-label]="'Página ' + (page + 1)">
+                </button>
+            </div>
+
         </div>
     </section>
 
@@ -184,12 +238,14 @@
 
                 <div class="mt-8 flex flex-col sm:flex-row gap-4">
                     <a routerLink="/produtos" [queryParams]="{ category: 'FITNESS' }"
-                        class="text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 self-start">
-                        CONHECER A LINHA FITNESS &rarr;
+                        class="text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 self-start flex items-center gap-1">
+                        <span>CONHECER A LINHA FITNESS</span>
+                        <svg lucideArrowRight class="size-4"></svg>
                     </a>
                     <a routerLink="/produtos" [queryParams]="{ category: 'SEMIJOIAS' }"
-                        class="text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 self-start sm:ml-6">
-                        CONHECER AS SEMIJOIAS &rarr;
+                        class="text-xs tracking-widest text-rg-rose hover:text-rg-roseLight border-b border-rg-rose pb-1 self-start sm:ml-6 flex items-center gap-1">
+                        <span>CONHECER AS SEMIJOIAS</span>
+                        <svg lucideArrowRight class="size-4"></svg>
                     </a>
                 </div>
             </div>

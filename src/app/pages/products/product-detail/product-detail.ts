@@ -1,13 +1,33 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+import {
+  LucideAlertTriangle,
+  LucideAlertCircle,
+  LucideMinus,
+  LucidePlus,
+  LucideShoppingBag,
+  LucideShieldCheck,
+  LucideRefreshCw
+} from '@lucide/angular';
 import { ProductService } from '../../../core/services/product';
 import { Product, ProductVariant } from '../../../shared/models/ecommerce.models';
 import { CartService } from '../../../core/services/cart';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LucideAlertTriangle,
+    LucideAlertCircle,
+    LucideMinus,
+    LucidePlus,
+    LucideShoppingBag,
+    LucideShieldCheck,
+    LucideRefreshCw
+  ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
 })
@@ -93,21 +113,22 @@ export class ProductDetail implements OnInit {
     this.router.navigate(['/carrinho']);
   }
 
-  getImageUrl(imageUrl?: string | null): string {
-    if (!imageUrl) {
-      return 'performance-collection.jpg';
+  getImageUrl(imageUrl?: string | null, categoryName?: string): string {
+    if (!imageUrl || imageUrl.trim() === '') {
+      return categoryName === 'SEMIJOIAS' ? '/elegance-collection.jpg' : '/performance-collection.jpg';
     }
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     }
+    const backendHost = environment.apiUrl.replace(/\/api\/?$/, '');
     if (imageUrl.startsWith('/api/uploads/')) {
-      return `http://localhost:8080${imageUrl}`;
+      return `${backendHost}${imageUrl}`;
     }
     if (imageUrl.startsWith('uploads/')) {
-      return `http://localhost:8080/api/${imageUrl}`;
+      return `${backendHost}/api/${imageUrl}`;
     }
     if (!imageUrl.includes('/')) {
-      return `http://localhost:8080/api/uploads/${imageUrl}`;
+      return `${backendHost}/api/uploads/${imageUrl}`;
     }
     return imageUrl;
   }
@@ -115,7 +136,7 @@ export class ProductDetail implements OnInit {
   onImageError(event: Event, categoryName?: string): void {
     const target = event.target as HTMLImageElement;
     if (target) {
-      target.src = categoryName === 'SEMIJOIAS' ? 'elegance-collection.jpg' : 'performance-collection.jpg';
+      target.src = categoryName === 'SEMIJOIAS' ? '/elegance-collection.jpg' : '/performance-collection.jpg';
     }
   }
 }

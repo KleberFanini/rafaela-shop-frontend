@@ -27,7 +27,7 @@
 
             <!-- Coluna Visual / Foto -->
             <div class="relative bg-rg-surface border border-rg-rose/20 overflow-hidden aspect-[4/5] shadow-2xl">
-                <img [src]="getImageUrl(product()?.imageUrl)" (error)="onImageError($event, product()?.category?.name)"
+                <img [src]="getImageUrl(product()?.imageUrl, product()?.category?.name)" (error)="onImageError($event, product()?.category?.name)"
                     [alt]="product()?.name" class="w-full h-full object-cover" />
 
                 <span
@@ -68,21 +68,23 @@
                         <button *ngFor="let v of product()?.variants" type="button" (click)="selectVariant(v)"
                             [class.border-rg-rose]="selectedVariant()?.id === v.id"
                             [class.bg-rg-rose]="selectedVariant()?.id === v.id"
-                            [class.text-rg-dark]="selectedVariant()?.id === v.id"
+                            [class.text-white]="selectedVariant()?.id !== v.id"
                             class="px-4 py-2 text-xs uppercase tracking-wider border border-rg-rose/30 bg-rg-surface hover:border-rg-rose transition-all flex items-center gap-2">
-                            <span>{{ v.size || v.color || 'Padrão' }}</span>
-                            <span class="text-[10px] opacity-75">({{ v.stock }} unid.)</span>
+                            <span class="font-medium">{{ v.size || v.color || 'Padrão' }}</span>
+                            <span class="text-[10px] opacity-80">({{ v.stock }} unid.)</span>
                         </button>
                     </div>
 
                     <!-- Aviso de Estoque Baixo -->
                     <p *ngIf="selectedVariant() && selectedVariant()!.stock <= 3 && selectedVariant()!.stock > 0"
                         class="text-[11px] text-amber-400 mt-3 flex items-center gap-1.5">
-                        <span>⚠</span> Restam apenas {{ selectedVariant()!.stock }} unidades desta variação!
+                        <svg lucideAlertTriangle class="size-4"></svg>
+                        <span>Restam apenas {{ selectedVariant()!.stock }} unidades desta variação!</span>
                     </p>
                     <p *ngIf="selectedVariant() && selectedVariant()!.stock === 0"
-                        class="text-[11px] text-red-400 mt-3">
-                        ✕ Esgotado no momento.
+                        class="text-[11px] text-red-400 mt-3 flex items-center gap-1.5">
+                        <svg lucideAlertCircle class="size-4"></svg>
+                        <span>Esgotado no momento.</span>
                     </p>
                 </div>
 
@@ -93,19 +95,20 @@
                     <div
                         class="flex items-center border border-rg-rose/30 bg-rg-surface h-12 w-32 justify-between px-3">
                         <button type="button" (click)="decreaseQuantity()"
-                            class="text-gray-300 hover:text-rg-rose text-base font-semibold px-2">
-                            -
+                            class="text-gray-300 hover:text-rg-rose p-1 flex items-center justify-center">
+                            <svg lucideMinus class="size-4"></svg>
                         </button>
                         <span class="text-sm font-medium text-gray-100">{{ quantity() }}</span>
                         <button type="button" (click)="increaseQuantity()"
-                            class="text-gray-300 hover:text-rg-rose text-base font-semibold px-2">
-                            +
+                            class="text-gray-300 hover:text-rg-rose p-1 flex items-center justify-center">
+                            <svg lucidePlus class="size-4"></svg>
                         </button>
                     </div>
 
                     <!-- Botão de Compra -->
                     <button type="button" (click)="addToCart()" [disabled]="selectedVariant()?.stock === 0"
                         class="flex-1 h-12 px-8 bg-rg-rose text-rg-dark border border-rg-rose font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <svg lucideShoppingBag class="size-4"></svg>
                         <span>{{ selectedVariant()?.stock === 0 ? 'Indisponível' : 'Adicionar à Sacola' }}</span>
                     </button>
                 </div>
@@ -113,11 +116,11 @@
                 <!-- Selos de Confiança -->
                 <div class="mt-10 pt-6 border-t border-rg-rose/10 grid grid-cols-2 gap-4 text-[11px] text-gray-400">
                     <div class="flex items-center gap-2">
-                        <span class="text-rg-rose">✦</span>
+                        <svg lucideShieldCheck class="size-4 text-rg-rose"></svg>
                         <span>Garantia de Qualidade</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-rg-rose">◈</span>
+                        <svg lucideRefreshCw class="size-4 text-rg-rose"></svg>
                         <span>Primeira Troca Grátis</span>
                     </div>
                 </div>

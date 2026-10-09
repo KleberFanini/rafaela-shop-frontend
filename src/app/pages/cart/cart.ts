@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { LucideMinus, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { CartService } from '../../core/services/cart';
-import { CartItem } from '../../shared/models/ecommerce.models';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, LucideMinus, LucidePlus, LucideTrash2],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
 })
@@ -25,21 +26,22 @@ export class Cart {
     this.cartService.removeItem(index);
   }
 
-  getImageUrl(imageUrl?: string | null): string {
-    if (!imageUrl) {
-      return 'performance-collection.jpg';
+  getImageUrl(imageUrl?: string | null, categoryName?: string): string {
+    if (!imageUrl || imageUrl.trim() === '') {
+      return categoryName === 'SEMIJOIAS' ? '/elegance-collection.jpg' : '/performance-collection.jpg';
     }
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     }
+    const backendHost = environment.apiUrl.replace(/\/api\/?$/, '');
     if (imageUrl.startsWith('/api/uploads/')) {
-      return `http://localhost:8080${imageUrl}`;
+      return `${backendHost}${imageUrl}`;
     }
     if (imageUrl.startsWith('uploads/')) {
-      return `http://localhost:8080/api/${imageUrl}`;
+      return `${backendHost}/api/${imageUrl}`;
     }
     if (!imageUrl.includes('/')) {
-      return `http://localhost:8080/api/uploads/${imageUrl}`;
+      return `${backendHost}/api/uploads/${imageUrl}`;
     }
     return imageUrl;
   }
@@ -47,7 +49,7 @@ export class Cart {
   onImageError(event: Event, categoryName?: string): void {
     const target = event.target as HTMLImageElement;
     if (target) {
-      target.src = categoryName === 'SEMIJOIAS' ? 'elegance-collection.jpg' : 'performance-collection.jpg';
+      target.src = categoryName === 'SEMIJOIAS' ? '/elegance-collection.jpg' : '/performance-collection.jpg';
     }
   }
 }

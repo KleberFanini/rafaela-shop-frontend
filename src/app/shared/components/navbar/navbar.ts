@@ -2,13 +2,37 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import {
+  LucideSearch,
+  LucideUser,
+  LucideChevronDown,
+  LucideHandbag,
+  LucideMenu,
+  LucideX,
+  LucideLayoutDashboard,
+  LucideLogOut,
+  LucideArrowRight
+} from '@lucide/angular';
 import { CartService } from '../../../core/services/cart';
 import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    LucideSearch,
+    LucideUser,
+    LucideChevronDown,
+    LucideHandbag,
+    LucideMenu,
+    LucideX,
+    LucideLayoutDashboard,
+    LucideLogOut,
+    LucideArrowRight
+  ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

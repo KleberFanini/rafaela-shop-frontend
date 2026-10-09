@@ -8,8 +8,9 @@
                 <h1 class="font-serif text-3xl text-gray-100 mt-1">Registar Novo Artigo</h1>
             </div>
             <a routerLink="/admin/dashboard"
-                class="text-xs uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors">
-                &larr; Voltar ao Painel
+                class="text-xs uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-1">
+                <svg lucideArrowLeft class="size-4"></svg>
+                <span>Voltar ao Painel</span>
             </a>
         </div>
 
@@ -69,8 +70,9 @@
                         2. Variações & Stock
                     </h2>
                     <button type="button" (click)="addVariant()"
-                        class="text-[11px] uppercase tracking-wider text-rg-rose hover:text-rg-roseLight font-medium">
-                        + Adicionar Opção
+                        class="text-[11px] uppercase tracking-wider text-rg-rose hover:text-rg-roseLight font-medium flex items-center gap-1">
+                        <svg lucidePlus class="size-3.5"></svg>
+                        <span>Adicionar Opção</span>
                     </button>
                 </div>
 
@@ -103,8 +105,9 @@
 
                         <div class="col-span-1 text-center pt-4">
                             <button type="button" (click)="removeVariant(i)" [disabled]="variants().length === 1"
-                                class="text-gray-500 hover:text-red-400 disabled:opacity-20 text-sm">
-                                ✕
+                                class="text-gray-500 hover:text-red-400 disabled:opacity-20 flex items-center justify-center mx-auto"
+                                title="Remover variação">
+                                <svg lucideTrash2 class="size-4"></svg>
                             </button>
                         </div>
 
@@ -121,10 +124,7 @@
 
                     <div
                         class="border-2 border-dashed border-rg-rose/30 hover:border-rg-rose p-6 text-center bg-rg-dark/40 transition-colors flex flex-col items-center justify-center">
-                        <svg class="size-8 text-rg-rose mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                        <svg lucideUpload class="size-8 text-rg-rose mb-2"></svg>
 
                         <label for="fileUpload"
                             class="cursor-pointer px-4 py-2 bg-rg-surface border border-rg-rose/40 text-rg-rose text-xs uppercase tracking-wider font-semibold hover:bg-rg-rose hover:text-rg-dark transition-all">

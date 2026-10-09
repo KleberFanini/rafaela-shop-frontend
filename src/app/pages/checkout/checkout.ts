@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { LucideCheck, LucideSparkles } from '@lucide/angular';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LucideCheck, LucideSparkles],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })

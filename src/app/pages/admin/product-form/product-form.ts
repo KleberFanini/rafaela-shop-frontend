@@ -2,13 +2,27 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import {
+  LucideArrowLeft,
+  LucidePlus,
+  LucideTrash2,
+  LucideUpload
+} from '@lucide/angular';
 import { ProductService } from '../../../core/services/product';
 import { AuthService } from '../../../core/services/auth';
 import { Category, ProductVariant } from '../../../shared/models/ecommerce.models';
 
 @Component({
   selector: 'app-product-form',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    LucideArrowLeft,
+    LucidePlus,
+    LucideTrash2,
+    LucideUpload
+  ],
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
 })

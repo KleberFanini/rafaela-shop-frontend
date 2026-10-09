@@ -1,13 +1,32 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import {
+  LucidePlus,
+  LucideClipboardList,
+  LucideDollarSign,
+  LucidePackage,
+  LucideAlertTriangle,
+  LucideEye,
+  LucideTrendingUp
+} from '@lucide/angular';
 import { ProductService } from '../../../core/services/product';
 import { AuthService } from '../../../core/services/auth';
 import { Product } from '../../../shared/models/ecommerce.models';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LucidePlus,
+    LucideClipboardList,
+    LucideDollarSign,
+    LucidePackage,
+    LucideAlertTriangle,
+    LucideEye,
+    LucideTrendingUp
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

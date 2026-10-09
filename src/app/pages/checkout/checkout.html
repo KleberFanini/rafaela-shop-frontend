@@ -4,7 +4,7 @@
         <!-- Confirmação do Pedido -->
         <div *ngIf="orderPlaced()"
             class="max-w-xl mx-auto py-16 text-center bg-rg-surface border border-rg-rose/30 p-8 shadow-2xl">
-            <span class="text-4xl text-rg-rose block mb-4">✦</span>
+            <svg lucideSparkles class="size-12 text-rg-rose mx-auto mb-4"></svg>
             <h1 class="font-serif text-3xl text-gray-100">Pedido Confirmado!</h1>
             <p class="text-xs text-gray-400 mt-2 uppercase tracking-widest">
                 Código: #RG-{{ customerData.phone.slice(-4) || '8492' }}
@@ -59,7 +59,9 @@
                                 <p class="text-gray-400" *ngIf="customerData.phone">WhatsApp: {{ customerData.phone }}
                                 </p>
                             </div>
-                            <span class="text-rg-rose text-sm font-semibold">Conectado ✓</span>
+                            <span class="text-rg-rose text-xs font-semibold flex items-center gap-1">
+                                <svg lucideCheck class="size-4"></svg> Conectado
+                            </span>
                         </div>
 
                         <!-- CASO 2: NÃO CONECTADO (Inputs de digitação + aviso de login) -->
@@ -131,7 +133,7 @@
                                     customerData.state }}</p>
                                 <p class="text-gray-500 text-[11px]">CEP: {{ customerData.zipCode }}</p>
                             </div>
-                            <span class="text-rg-rose text-base">✓</span>
+                            <svg lucideCheck class="size-5 text-rg-rose"></svg>
                         </div>
 
                         <!-- CASO 2: MOSTRA FORMULÁRIO SE NÃO TIVER SALVO OU SE CLICOU EM EDITAR -->

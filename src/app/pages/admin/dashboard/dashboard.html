@@ -31,9 +31,13 @@
                     <svg lucideDollarSign class="size-5 text-rg-rose"></svg>
                 </div>
                 <p class="font-serif text-3xl text-rg-rose mt-1">R$ {{ (totalRevenue() || 0).toFixed(2) }}</p>
-                <span class="text-[10px] text-emerald-400 mt-2 flex items-center gap-1 font-medium">
+                <span *ngIf="revenueGrowthPercentage() >= 0" class="text-[10px] text-emerald-400 mt-2 flex items-center gap-1 font-medium">
                     <svg lucideTrendingUp class="size-3.5"></svg>
-                    +18.5% de lucro em relação ao mês anterior
+                    +{{ revenueGrowthPercentage() }}% em relação ao mês anterior
+                </span>
+                <span *ngIf="revenueGrowthPercentage() < 0" class="text-[10px] text-rose-400 mt-2 flex items-center gap-1 font-medium">
+                    <svg lucideTrendingDown class="size-3.5"></svg>
+                    {{ revenueGrowthPercentage() }}% em relação ao mês anterior
                 </span>
             </div>
 

@@ -31,6 +31,7 @@ export interface CartItem {
 
 export interface DashboardStats {
     totalRevenue: number;
+    revenueGrowthPercentage?: number;
     totalOrders: number;
     pendingOrders: number;
     activeCatalogCount: number;

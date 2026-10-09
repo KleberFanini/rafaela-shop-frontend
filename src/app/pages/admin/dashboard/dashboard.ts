@@ -9,6 +9,7 @@ import {
   LucideAlertTriangle,
   LucideEye,
   LucideTrendingUp,
+  LucideTrendingDown,
   LucideBoxes,
   LucidePencil
 } from '@lucide/angular';
@@ -29,6 +30,7 @@ import { Product } from '../../../shared/models/ecommerce.models';
     LucideAlertTriangle,
     LucideEye,
     LucideTrendingUp,
+    LucideTrendingDown,
     LucideBoxes,
     LucidePencil
   ],
@@ -46,6 +48,7 @@ export class Dashboard implements OnInit {
 
   // Métricas do painel reais vindas do banco de dados
   totalRevenue = signal(0);
+  revenueGrowthPercentage = signal(0);
   totalOrders = signal(0);
   pendingOrders = signal(0);
 
@@ -81,6 +84,7 @@ export class Dashboard implements OnInit {
       next: (stats) => {
         if (stats) {
           this.totalRevenue.set(stats.totalRevenue ?? 0);
+          this.revenueGrowthPercentage.set(stats.revenueGrowthPercentage ?? 0);
           this.totalOrders.set(stats.totalOrders ?? 0);
           this.pendingOrders.set(stats.pendingOrders ?? 0);
         }

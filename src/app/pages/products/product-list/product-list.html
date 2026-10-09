@@ -65,12 +65,12 @@
                 <!-- Foto do Produto -->
                 <a [routerLink]="['/produtos', product.id]"
                     class="relative aspect-[4/5] bg-black/40 overflow-hidden block">
-                    <img [src]="getImageUrl(product.imageUrl, product.category?.name)" (error)="onImageError($event, product.category?.name)" [alt]="product.name"
+                    <img [src]="getImageUrl(product.imageUrl, product.category.name)" (error)="onImageError($event, product.category.name)" [alt]="product.name"
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
 
                     <span
                         class="absolute top-3 left-3 bg-rg-dark/85 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1">
-                        {{ product.category?.name }}
+                        {{ product.category.name }}
                     </span>
                 </a>
 

@@ -91,7 +91,7 @@
                     <tbody class="divide-y divide-rg-rose/10">
                         <tr *ngFor="let prod of lowStockItems()" class="hover:bg-rg-dark/40 transition-colors">
                             <td class="py-4 px-4 font-medium text-gray-100">{{ prod.name }}</td>
-                            <td class="py-4 px-4 text-gray-400">{{ prod.category?.name }}</td>
+                            <td class="py-4 px-4 text-gray-400">{{ prod.category.name }}</td>
                             <td class="py-4 px-4 font-serif text-rg-rose">R$ {{ prod.price.toFixed(2) }}</td>
                             <td class="py-4 px-4">
                                 <div class="flex flex-wrap gap-1.5">

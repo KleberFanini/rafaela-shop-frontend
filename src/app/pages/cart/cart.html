@@ -29,11 +29,11 @@
                     class="flex flex-col sm:flex-row gap-5 p-5 bg-rg-surface border border-rg-rose/20 items-center justify-between">
 
                     <div class="flex items-center gap-4 w-full sm:w-auto">
-                        <img [src]="getImageUrl(item.product.imageUrl, item.product.category?.name)" (error)="onImageError($event, item.product.category?.name)"
+                        <img [src]="getImageUrl(item.product.imageUrl, item.product.category.name)" (error)="onImageError($event, item.product.category.name)"
                             [alt]="item.product.name" class="w-20 h-24 object-cover border border-rg-rose/20" />
                         <div>
                             <span class="text-[9px] uppercase tracking-widest text-rg-rose">{{
-                                item.product.category?.name }}</span>
+                                item.product.category.name }}</span>
                             <h3 class="text-sm font-medium text-gray-200">{{ item.product.name }}</h3>
                             <p *ngIf="item.selectedVariant" class="text-xs text-gray-400 mt-0.5">
                                 Opção: {{ item.selectedVariant.size || item.selectedVariant.color }}

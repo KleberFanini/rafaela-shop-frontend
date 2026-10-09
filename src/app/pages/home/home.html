@@ -150,11 +150,11 @@
 
                                 <!-- Imagem e Categoria -->
                                 <div class="relative overflow-hidden aspect-[4/5] bg-black/40">
-                                    <img [src]="getImageUrl(item.imageUrl, item.category?.name)" (error)="onImageError($event, item.category?.name)" [alt]="item.name"
+                                    <img [src]="getImageUrl(item.imageUrl, item.category.name)" (error)="onImageError($event, item.category.name)" [alt]="item.name"
                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                     <span
                                         class="absolute top-3 left-3 bg-rg-dark/85 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1">
-                                        {{ item.category?.name || 'Exclusivo' }}
+                                        {{ item.category.name || 'Exclusivo' }}
                                     </span>
                                 </div>
 
@@ -162,7 +162,7 @@
                                 <div class="p-5 flex flex-col flex-grow justify-between">
                                     <div>
                                         <span class="text-[9px] uppercase tracking-widest text-gray-400 block mb-1">
-                                            {{ item.category?.name === 'FITNESS' ? 'Moda Fitness' : 'Semijoia de Luxo' }}
+                                            {{ item.category.name === 'FITNESS' ? 'Moda Fitness' : 'Semijoia de Luxo' }}
                                         </span>
                                         <h3
                                             class="text-sm font-medium text-gray-200 group-hover:text-rg-rose transition-colors line-clamp-1">

@@ -32,6 +32,10 @@ export class ProductService {
     return this.http.post<Product>(`${this.apiUrl}/products`, product);
   }
 
+  updateProduct(id: number, product: Partial<Product>): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/products/${id}`, product);
+  }
+
   uploadImage(file: File): Observable<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);

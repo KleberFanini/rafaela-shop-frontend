@@ -5,7 +5,7 @@
         <div class="flex justify-between items-center border-b border-rg-rose/20 pb-4">
             <div>
                 <p class="text-[10px] tracking-[0.35em] text-rg-rose uppercase">Gestão de Catálogo</p>
-                <h1 class="font-serif text-3xl text-gray-100 mt-1">Registar Novo Artigo</h1>
+                <h1 class="font-serif text-3xl text-gray-100 mt-1">{{ isEditMode() ? 'Editar Produto' : 'Registar Novo Artigo' }}</h1>
             </div>
             <a routerLink="/admin/dashboard"
                 class="text-xs uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-1">
@@ -157,7 +157,7 @@
             <div class="pt-6 border-t border-rg-rose/20 flex justify-end">
                 <button type="submit" [disabled]="loading()"
                     class="px-8 py-3 bg-rg-rose text-rg-dark font-semibold text-xs tracking-[0.2em] uppercase border border-rg-rose hover:bg-transparent hover:text-rg-rose transition-all duration-300 disabled:opacity-40">
-                    {{ loading() ? 'A Gravar...' : 'Gravar Artigo no Catálogo' }}
+                    {{ loading() ? 'A Gravar...' : (isEditMode() ? 'Salvar Alterações do Produto' : 'Gravar Artigo no Catálogo') }}
                 </button>
             </div>
 

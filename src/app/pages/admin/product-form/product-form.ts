@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import {
   LucideArrowLeft,
   LucidePlus,
@@ -26,15 +26,19 @@ import { Category, ProductVariant } from '../../../shared/models/ecommerce.model
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
 })
-export class ProductForm {
+export class ProductForm implements OnInit {
   private productService = inject(ProductService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   loading = signal(false);
   uploadingImage = signal(false);
   categories = signal<Category[]>([]);
   errorMessage = signal<string | null>(null);
+
+  isEditMode = signal(false);
+  productId = signal<number | null>(null);
 
   // Pré-visualização local (base64 ou URL do servidor)
   imagePreview = signal<string | null>(null);
@@ -58,7 +62,16 @@ export class ProductForm {
       this.router.navigate(['/login']);
       return;
     }
+
     this.loadCategories();
+
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      const id = Number(idParam);
+      this.isEditMode.set(true);
+      this.productId.set(id);
+      this.loadProductToEdit(id);
+    }
   }
 
   loadCategories(): void {
@@ -70,6 +83,33 @@ export class ProductForm {
         }
       },
       error: () => this.errorMessage.set('Não foi possível carregar as categorias.')
+    });
+  }
+
+  loadProductToEdit(id: number): void {
+    this.loading.set(true);
+    this.productService.getProductById(id).subscribe({
+      next: (prod) => {
+        this.productData.name = prod.name;
+        this.productData.description = prod.description;
+        this.productData.price = prod.price;
+        this.productData.imageUrl = prod.imageUrl || '';
+        this.productData.categoryId = prod.category?.id || null;
+
+        if (prod.imageUrl) {
+          this.imagePreview.set(prod.imageUrl);
+        }
+
+        if (prod.variants && prod.variants.length > 0) {
+          this.variants.set(prod.variants);
+        }
+
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.errorMessage.set('Não foi possível carregar os dados do produto.');
+      }
     });
   }
 
@@ -142,7 +182,11 @@ export class ProductForm {
       variants: this.variants()
     };
 
-    this.productService.createProduct(payload).subscribe({
+    const request = this.isEditMode() && this.productId()
+      ? this.productService.updateProduct(this.productId()!, payload)
+      : this.productService.createProduct(payload);
+
+    request.subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/admin/dashboard']);

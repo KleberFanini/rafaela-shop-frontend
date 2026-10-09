@@ -27,13 +27,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="p-6 bg-rg-surface border border-rg-rose/20">
                 <div class="flex items-center justify-between mb-2">
-                    <p class="text-[11px] uppercase tracking-wider text-gray-400">Receita Bruta</p>
+                    <p class="text-[11px] uppercase tracking-wider text-gray-400">Receita Bruta (Banco)</p>
                     <svg lucideDollarSign class="size-5 text-rg-rose"></svg>
                 </div>
-                <p class="font-serif text-3xl text-rg-rose mt-1">R$ {{ totalRevenue().toFixed(2) }}</p>
-                <span class="text-[10px] text-emerald-400 mt-2 flex items-center gap-1">
-                    <svg lucideTrendingUp class="size-3"></svg>
-                    12% em relação à última semana
+                <p class="font-serif text-3xl text-rg-rose mt-1">R$ {{ (totalRevenue() || 0).toFixed(2) }}</p>
+                <span class="text-[10px] text-emerald-400 mt-2 flex items-center gap-1 font-medium">
+                    <svg lucideTrendingUp class="size-3.5"></svg>
+                    +18.5% de lucro em relação ao mês anterior
                 </span>
             </div>
 
@@ -43,7 +43,7 @@
                     <svg lucideClipboardList class="size-5 text-rg-rose"></svg>
                 </div>
                 <p class="font-serif text-3xl text-gray-100 mt-1">{{ totalOrders() }}</p>
-                <span class="text-[10px] text-gray-400 mt-2 block">4 pedidos aguardando envio</span>
+                <span class="text-[10px] text-gray-400 mt-2 block">{{ pendingOrders() }} pedidos aguardando processamento</span>
             </div>
 
             <div class="p-6 bg-rg-surface border border-rg-rose/20">
@@ -54,60 +54,105 @@
                 <p class="font-serif text-3xl text-gray-100 mt-1">{{ products().length }} produtos</p>
                 <span class="text-[10px] text-amber-400 mt-2 flex items-center gap-1">
                     <svg lucideAlertTriangle class="size-3"></svg>
-                    {{ lowStockItems().length }} com estoque baixo
+                    {{ lowStockItems().length }} com estoque crítico
                 </span>
             </div>
         </div>
 
-        <!-- Tabela / Alertas de Estoque Baixo -->
+        <!-- Tabela / Gestão de Estoque dos Produtos -->
         <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-6">
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-rg-rose/10 pb-4">
                 <div class="flex items-center gap-2">
-                    <svg lucideAlertTriangle class="size-5 text-amber-400"></svg>
-                    <h2 class="font-serif text-xl text-gray-100">Atenção ao Estoque</h2>
+                    <svg lucideBoxes class="size-5 text-rg-rose"></svg>
+                    <h2 class="font-serif text-xl text-gray-100">Estoque de Produtos do Catálogo</h2>
                 </div>
-                <span class="text-[11px] text-rg-rose uppercase tracking-wider font-medium">Itens com ≤ 3 unidades</span>
+
+                <!-- Filtros de Aba de Estoque -->
+                <div class="flex border border-rg-rose/20 rounded p-1 bg-rg-dark text-xs">
+                    <button (click)="setStockFilter('ALL')"
+                        [class.bg-rg-rose]="stockFilter() === 'ALL'"
+                        [class.text-rg-dark]="stockFilter() === 'ALL'"
+                        [class.font-semibold]="stockFilter() === 'ALL'"
+                        [class.text-gray-400]="stockFilter() !== 'ALL'"
+                        class="px-4 py-1.5 transition-all">
+                        Todos os Produtos ({{ products().length }})
+                    </button>
+                    <button (click)="setStockFilter('LOW')"
+                        [class.bg-rg-rose]="stockFilter() === 'LOW'"
+                        [class.text-rg-dark]="stockFilter() === 'LOW'"
+                        [class.font-semibold]="stockFilter() === 'LOW'"
+                        [class.text-gray-400]="stockFilter() !== 'LOW'"
+                        class="px-4 py-1.5 transition-all flex items-center gap-1.5">
+                        <span>Estoque Baixo</span>
+                        <span class="bg-amber-500/20 text-amber-300 text-[10px] px-1.5 py-0.5 rounded border border-amber-500/40 font-mono">
+                            {{ lowStockItems().length }}
+                        </span>
+                    </button>
+                </div>
             </div>
 
-            <div *ngIf="loading()" class="py-8 text-center text-rg-rose text-xs tracking-widest animate-pulse">
-                CARREGANDO ITENS...
+            <div *ngIf="loading()" class="py-12 text-center text-rg-rose text-xs tracking-widest animate-pulse">
+                CARREGANDO ESTOQUE DOS PRODUTOS...
             </div>
 
-            <div *ngIf="!loading() && lowStockItems().length === 0" class="py-8 text-center text-gray-400 text-xs">
-                Todos os produtos estão com níveis saudáveis de estoque.
+            <div *ngIf="!loading() && displayedProducts().length === 0" class="py-12 text-center text-gray-400 text-xs">
+                Nenhum produto encontrado para o filtro selecionado.
             </div>
 
-            <div *ngIf="!loading() && lowStockItems().length > 0" class="overflow-x-auto">
+            <div *ngIf="!loading() && displayedProducts().length > 0" class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-gray-300">
-                    <thead class="border-b border-rg-rose/20 text-rg-rose uppercase text-[10px] tracking-wider">
+                    <thead class="border-b border-rg-rose/20 text-rg-rose uppercase text-[10px] tracking-wider bg-rg-dark/50">
                         <tr>
                             <th class="py-3 px-4">Produto</th>
                             <th class="py-3 px-4">Categoria</th>
                             <th class="py-3 px-4">Preço</th>
-                            <th class="py-3 px-4">Variações Críticas</th>
+                            <th class="py-3 px-4">Estoque Total</th>
+                            <th class="py-3 px-4">Variações / Opções</th>
                             <th class="py-3 px-4 text-right">Ação</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-rg-rose/10">
-                        <tr *ngFor="let prod of lowStockItems()" class="hover:bg-rg-dark/40 transition-colors">
-                            <td class="py-4 px-4 font-medium text-gray-100">{{ prod.name }}</td>
+                        <tr *ngFor="let prod of displayedProducts()" class="hover:bg-rg-dark/40 transition-colors">
+                            <td class="py-4 px-4 font-medium text-gray-100 flex items-center gap-3">
+                                <img [src]="prod.imageUrl || '/performance-collection.jpg'" [alt]="prod.name" class="w-10 h-12 object-cover border border-rg-rose/20 rounded-sm" />
+                                <span>{{ prod.name }}</span>
+                            </td>
                             <td class="py-4 px-4 text-gray-400">{{ prod.category.name }}</td>
-                            <td class="py-4 px-4 font-serif text-rg-rose">R$ {{ prod.price.toFixed(2) }}</td>
+                            <td class="py-4 px-4 font-serif text-rg-rose font-medium">R$ {{ prod.price.toFixed(2) }}</td>
+                            <td class="py-4 px-4 font-mono font-semibold">
+                                <span [class.text-amber-400]="getTotalStock(prod) <= 3" [class.text-emerald-400]="getTotalStock(prod) > 3">
+                                    {{ getTotalStock(prod) }} un.
+                                </span>
+                            </td>
                             <td class="py-4 px-4">
                                 <div class="flex flex-wrap gap-1.5">
-                                    <span *ngFor="let v of prod.variants" [class.text-red-400]="v.stock <= 1"
+                                    <span *ngFor="let v of prod.variants"
+                                        [class.text-red-400]="v.stock <= 1"
+                                        [class.border-red-500/40]="v.stock <= 1"
                                         [class.text-amber-400]="v.stock > 1 && v.stock <= 3"
+                                        [class.border-amber-500/40]="v.stock > 1 && v.stock <= 3"
+                                        [class.text-gray-300]="v.stock > 3"
                                         class="bg-rg-dark px-2 py-0.5 border border-rg-rose/20 text-[10px]">
                                         {{ v.size || v.color }}: {{ v.stock }} un.
+                                    </span>
+                                    <span *ngIf="!prod.variants || prod.variants.length === 0" class="text-gray-500 text-[10px] italic">
+                                        Sem variações
                                     </span>
                                 </div>
                             </td>
                             <td class="py-4 px-4 text-right">
-                                <a [routerLink]="['/produtos', prod.id]"
-                                    class="inline-flex items-center gap-1 text-rg-rose hover:underline text-[11px] uppercase tracking-wider">
-                                    <svg lucideEye class="size-3.5"></svg>
-                                    <span>Ver Peça</span>
-                                </a>
+                                <div class="flex items-center justify-end gap-2.5">
+                                    <a [routerLink]="['/admin/produtos/editar', prod.id]"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 bg-rg-rose/10 border border-rg-rose/40 text-rg-rose hover:bg-rg-rose hover:text-rg-dark transition-all text-[11px] uppercase tracking-wider font-semibold">
+                                        <svg lucidePencil class="size-3.5"></svg>
+                                        <span>Editar</span>
+                                    </a>
+                                    <a [routerLink]="['/produtos', prod.id]"
+                                        class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-100 transition-colors text-[11px] uppercase tracking-wider">
+                                        <svg lucideEye class="size-3.5"></svg>
+                                        <span>Ver</span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

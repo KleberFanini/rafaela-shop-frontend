@@ -22,6 +22,7 @@ export const routes: Routes = [
     { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
     { path: 'admin/dashboard', component: Dashboard },
     { path: 'admin/produtos/novo', component: ProductForm },
+    { path: 'admin/produtos/editar/:id', component: ProductForm },
     { path: 'admin/pedidos', component: Orders },
 
     // Redirecionamento padrão

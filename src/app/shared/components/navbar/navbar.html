@@ -1,141 +1,165 @@
-<header class="fixed inset-x-0 top-0 z-50 border-b border-rg-rose/20 bg-rg-dark/90 backdrop-blur-xl transition-all">
-    <div class="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
+<header class="fixed inset-x-0 top-0 z-50 transition-all shadow-xl">
 
-        <!-- Logo / Marca -->
-        <a routerLink="/" class="flex flex-col" aria-label="Página inicial Rafaela Gamero">
-            <span class="font-serif text-lg tracking-[0.16em] sm:text-xl text-rg-rose font-medium">
-                RAFAELA GAMERO
-            </span>
-            <span class="text-[8px] uppercase tracking-[0.3em] text-rg-roseLight/70 -mt-1 hidden sm:block">
-                Fitness &bull; Luxury
-            </span>
-        </a>
+    <!-- 1. Barra de Anúncios no Topo (Announcement Bar) -->
+    <!-- <div
+        class="bg-black/95 border-b border-rg-rose/20 text-[10px] text-gray-300 py-1.5 px-4 text-center tracking-[0.18em] uppercase font-light flex items-center justify-center gap-2 overflow-hidden">
+        <span class="flex items-center gap-1 text-rg-rose">
+            <svg lucideSparkles class="size-3 text-rg-rose"></svg>
+            <span>Rafaela Gamero Multimarcas</span>
+        </span>
+        <span class="text-rg-rose/30 hidden sm:inline">&bull;</span>
+        <span class="hidden sm:inline">Enviamos Para Todo o Brasil ✈️</span>
+        <span class="text-rg-rose/30 hidden md:inline">&bull;</span>
+        <span class="text-gray-400 hidden md:inline">Parcelamento em até 3x sem juros</span>
+        <span class="text-rg-rose/30">&bull;</span>
+        <span class="text-rg-rose font-medium">Moda Fitness & Semijoias</span>
+    </div> -->
 
-        <!-- Links de Navegação Desktop -->
-        <nav class="hidden items-center gap-8 lg:flex" aria-label="Navegação principal">
-            <a *ngFor="let link of navLinks" [routerLink]="link.route" [queryParams]="link.queryParams"
-                [fragment]="link.fragment"
-                class="text-[11px] font-medium tracking-[0.22em] text-gray-300 transition-colors hover:text-rg-rose">
-                {{ link.label }}
-            </a>
-        </nav>
+    <!-- 2. Barra de Navegação Principal -->
+    <div class="border-b border-rg-rose/20 bg-rg-dark/95 backdrop-blur-xl">
+        <div class="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
 
-        <!-- Ações e Ícones à Direita -->
-        <div class="flex items-center gap-2 sm:gap-3">
-
-            <!-- Botão de Pesquisa -->
-            <button type="button" (click)="toggleSearch()" aria-label="Abrir pesquisa"
-                class="p-2 text-gray-300 hover:text-rg-rose transition-colors relative">
-                <svg lucideSearch class="size-5"></svg>
-            </button>
-
-            <!-- Bloco de Autenticação Desktop -->
-            <div class="hidden sm:flex items-center">
-                <!-- Caso 1: Usuário NÃO logado -->
-                <a *ngIf="!authService.isLoggedIn()" routerLink="/login"
-                    class="flex items-center gap-1.5 px-3 py-1.5 border border-rg-rose/30 text-gray-300 hover:text-rg-rose hover:border-rg-rose transition-colors text-[11px] tracking-[0.15em] uppercase">
-                    <svg lucideUser class="size-4"></svg>
-                    <span>Entrar</span>
-                </a>
-
-                <!-- Caso 2: Usuário LOGADO -->
-                <div *ngIf="authService.isLoggedIn()" class="relative group">
-                    <button type="button"
-                        class="flex items-center gap-2 px-3 py-1.5 border border-rg-rose/40 text-rg-rose text-[11px] tracking-wider uppercase hover:bg-rg-rose/10 transition-colors">
-                        <svg lucideUser class="size-4"></svg>
-                        <span>Olá, {{ authService.firstName() }}</span>
-                        <svg lucideChevronDown class="size-3.5"></svg>
-                    </button>
-
-                    <!-- Menu Dropdown do Perfil -->
-                    <div
-                        class="absolute right-0 top-full mt-1 w-48 bg-rg-surface border border-rg-rose/30 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-50">
-                        <a *ngIf="authService.currentUser()?.role === 'ADMIN'" routerLink="/admin/dashboard"
-                            class="flex items-center gap-2 px-4 py-2 text-xs text-rg-rose hover:bg-rg-dark transition-colors">
-                            <svg lucideLayoutDashboard class="size-3.5"></svg>
-                            <span>Painel Admin</span>
-                        </a>
-                        <a routerLink="/checkout"
-                            class="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 hover:text-rg-rose hover:bg-rg-dark transition-colors">
-                            <svg lucideShoppingBag class="size-3.5"></svg>
-                            <span>Meus Pedidos</span>
-                        </a>
-                        <div class="my-1 border-t border-rg-rose/10"></div>
-                        <button type="button" (click)="logout()"
-                            class="w-full flex items-center gap-2 text-left px-4 py-2 text-xs text-gray-400 hover:text-red-400 hover:bg-rg-dark transition-colors">
-                            <svg lucideLogOut class="size-3.5"></svg>
-                            <span>Sair da Conta</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sacola de Compras / Carrinho com Contador -->
-            <a routerLink="/carrinho" aria-label="Ver carrinho de compras"
-                class="p-2 text-gray-300 hover:text-rg-rose transition-colors relative">
-                <svg lucideHandbag class="size-5"></svg>
-
-                <!-- Contador de Itens -->
-                <span *ngIf="cartCount() > 0"
-                    class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rg-rose text-[9px] font-bold text-rg-dark">
-                    {{ cartCount() }}
+            <!-- Logo / Marca -->
+            <a routerLink="/" class="flex flex-col group" aria-label="Página inicial Rafaela Gamero">
+                <span
+                    class="font-serif text-xl tracking-[0.18em] sm:text-2xl text-rg-rose font-medium group-hover:text-rg-roseLight transition-colors">
+                    RAFAELA GAMERO
+                </span>
+                <span class="text-[8px] uppercase tracking-[0.35em] text-gray-400 -mt-1 hidden sm:block">
+                    Fitness &bull; Luxury
                 </span>
             </a>
 
-            <!-- Botão Hambúrguer Mobile -->
-            <button type="button" (click)="toggleMenu()"
-                class="p-2 text-gray-300 hover:text-rg-rose transition-colors lg:hidden"
-                [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'">
-                <svg *ngIf="!menuOpen()" lucideMenu class="size-6"></svg>
-                <svg *ngIf="menuOpen()" lucideX class="size-6"></svg>
-            </button>
+            <!-- Links de Navegação Desktop -->
+            <nav class="hidden items-center gap-8 lg:flex" aria-label="Navegação principal">
+                <a *ngFor="let link of navLinks" [routerLink]="link.route" [queryParams]="link.queryParams"
+                    class="text-[11px] font-medium tracking-[0.22em] text-gray-300 transition-colors hover:text-rg-rose py-1 border-b border-transparent hover:border-rg-rose">
+                    {{ link.label }}
+                </a>
+            </nav>
 
-        </div>
-    </div>
+            <!-- Ações e Ícones à Direita -->
+            <div class="flex items-center gap-2.5 sm:gap-3.5">
 
-    <!-- Barra de Busca Expansível -->
-    <div *ngIf="searchOpen()" class="border-y border-rg-rose/20 bg-rg-dark/95 px-6 py-5 shadow-2xl backdrop-blur-2xl">
-        <div class="mx-auto max-w-2xl">
-            <form (submit)="performSearch(); $event.preventDefault()"
-                class="flex items-center gap-3 border-b border-rg-rose pb-2">
-                <svg lucideSearch class="size-5 text-rg-rose"></svg>
-                <input autofocus [(ngModel)]="searchQuery" name="search"
-                    placeholder="Buscar leggings, tops, semijoias..."
-                    class="w-full bg-transparent text-sm text-gray-100 outline-none placeholder:text-gray-500" />
-                <button type="button" (click)="toggleSearch()"
-                    class="text-xs uppercase text-gray-400 hover:text-rg-rose">
-                    Fechar
+
+                <!-- Botão Atendimento VIP (WhatsApp) - Inspirado na referência -->
+                <!-- <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer"
+                    class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/50 bg-emerald-950/20 text-emerald-400 hover:bg-emerald-500 hover:text-rg-dark text-[11px] tracking-wider uppercase font-medium transition-all duration-300 shadow-sm"
+                    title="Falar no WhatsApp com Atendimento VIP">
+                    <svg lucideMessageCircle class="size-3.5"></svg>
+                    <span>Atendimento VIP</span>
+                </a> -->
+
+                <!-- Bloco de Autenticação / Conta -->
+                <div class="hidden sm:flex items-center">
+                    <!-- Usuário NÃO logado -->
+                    <a *ngIf="!authService.isLoggedIn()" routerLink="/login"
+                        class="flex items-center gap-1.5 px-3 py-1.5 border border-rg-rose/30 text-gray-300 hover:text-rg-rose hover:border-rg-rose transition-colors text-[11px] tracking-[0.15em] uppercase rounded-sm">
+                        <svg lucideUser class="size-3.5"></svg>
+                        <span>Entrar</span>
+                    </a>
+
+                    <!-- Usuário LOGADO -->
+                    <div *ngIf="authService.isLoggedIn()" class="relative group">
+                        <button type="button"
+                            class="flex items-center gap-2 px-3 py-1.5 border border-rg-rose/40 text-rg-rose text-[11px] tracking-wider uppercase hover:bg-rg-rose/10 transition-colors rounded-sm">
+                            <svg lucideUser class="size-3.5"></svg>
+                            <span>Olá, {{ authService.firstName() }}</span>
+                            <svg lucideChevronDown class="size-3"></svg>
+                        </button>
+
+                        <!-- Menu Dropdown do Perfil -->
+                        <div
+                            class="absolute right-0 top-full mt-1 w-48 bg-rg-surface border border-rg-rose/30 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-50 rounded">
+                            <a *ngIf="authService.currentUser()?.role === 'ADMIN'" routerLink="/admin/dashboard"
+                                class="flex items-center gap-2 px-4 py-2 text-xs text-rg-rose hover:bg-rg-dark transition-colors font-medium">
+                                <svg lucideLayoutDashboard class="size-3.5"></svg>
+                                <span>Painel Admin</span>
+                            </a>
+                            <a routerLink="/admin/pedidos" *ngIf="authService.currentUser()?.role === 'ADMIN'"
+                                class="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 hover:text-rg-rose hover:bg-rg-dark transition-colors">
+                                <svg lucideShoppingBag class="size-3.5"></svg>
+                                <span>Gerir Pedidos</span>
+                            </a>
+                            <a routerLink="/carrinho"
+                                class="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 hover:text-rg-rose hover:bg-rg-dark transition-colors">
+                                <svg lucideShoppingBag class="size-3.5"></svg>
+                                <span>Minha Sacola</span>
+                            </a>
+                            <div class="my-1 border-t border-rg-rose/10"></div>
+                            <button type="button" (click)="logout()"
+                                class="w-full flex items-center gap-2 text-left px-4 py-2 text-xs text-gray-400 hover:text-red-400 hover:bg-rg-dark transition-colors">
+                                <svg lucideLogOut class="size-3.5"></svg>
+                                <span>Sair da Conta</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sacola de Compras / Carrinho com Contador -->
+                <a routerLink="/carrinho" aria-label="Ver carrinho de compras"
+                    class="p-2 text-gray-300 hover:text-rg-rose transition-colors relative">
+                    <svg lucideHandbag class="size-5"></svg>
+
+                    <!-- Contador de Itens -->
+                    <span *ngIf="cartCount() > 0"
+                        class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rg-rose text-[9px] font-bold text-rg-dark">
+                        {{ cartCount() }}
+                    </span>
+                </a>
+
+                <!-- Botão Hambúrguer Mobile -->
+                <button type="button" (click)="toggleMenu()"
+                    class="p-2 text-gray-300 hover:text-rg-rose transition-colors lg:hidden"
+                    [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'">
+                    <svg *ngIf="!menuOpen()" lucideMenu class="size-6"></svg>
+                    <svg *ngIf="menuOpen()" lucideX class="size-6"></svg>
                 </button>
-            </form>
 
-            <!-- Sugestões Rápidas -->
-            <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-gray-400">
-                <span class="text-gray-500 uppercase tracking-wider text-[9px]">Populares:</span>
-                <button *ngFor="let term of quickSearches" type="button" (click)="searchKeyword(term)"
-                    class="rounded-full border border-rg-rose/20 bg-rg-surface px-2.5 py-0.5 text-gray-300 hover:border-rg-rose hover:text-rg-rose transition-colors">
-                    {{ term }}
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Gaveta de Links Mobile -->
-    <nav *ngIf="menuOpen()" class="border-t border-rg-rose/20 bg-rg-dark px-6 py-8 shadow-2xl lg:hidden"
+
+    <!-- 4. Gaveta de Navegação Mobile -->
+    <nav *ngIf="menuOpen()"
+        class="border-b border-rg-rose/20 bg-rg-dark/95 px-6 py-8 shadow-2xl lg:hidden backdrop-blur-2xl"
         aria-label="Navegação mobile">
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-5">
+            <!-- Botão Atendimento VIP Mobile -->
+            <!-- <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" (click)="closeMenu()"
+                class="flex items-center justify-center gap-2 py-2 px-4 rounded-full border border-emerald-500/50 bg-emerald-950/20 text-emerald-400 text-xs uppercase tracking-wider font-medium">
+                <svg lucideMessageCircle class="size-4"></svg>
+                <span>Atendimento VIP no WhatsApp</span>
+            </a> -->
+
+            <div class="h-px w-full bg-rg-rose/15 my-1"></div>
+
             <a *ngFor="let link of navLinks" [routerLink]="link.route" [queryParams]="link.queryParams"
-                [fragment]="link.fragment" (click)="closeMenu()"
+                (click)="closeMenu()"
                 class="text-xs uppercase tracking-[0.25em] text-gray-200 hover:text-rg-rose transition-colors">
                 {{ link.label }}
             </a>
 
-            <div class="my-2 h-px w-full bg-rg-rose/20"></div>
+            <div class="h-px w-full bg-rg-rose/15 my-1"></div>
 
-            <a routerLink="/admin" (click)="closeMenu()"
-                class="text-xs uppercase tracking-[0.25em] text-rg-rose flex items-center gap-2">
-                <span>Painel do Produtor</span>
+            <a *ngIf="!authService.isLoggedIn()" routerLink="/login" (click)="closeMenu()"
+                class="text-xs uppercase tracking-[0.2em] text-gray-300 flex items-center gap-2 hover:text-rg-rose">
+                <svg lucideUser class="size-4"></svg>
+                <span>Minha Conta / Entrar</span>
+            </a>
+
+            <a *ngIf="authService.currentUser()?.role === 'ADMIN'" routerLink="/admin/dashboard" (click)="closeMenu()"
+                class="text-xs uppercase tracking-[0.25em] text-rg-rose flex items-center justify-between font-semibold">
+                <span>Painel do Administrador</span>
                 <svg lucideArrowRight class="size-4"></svg>
             </a>
+
+            <button *ngIf="authService.isLoggedIn()" type="button" (click)="logout(); closeMenu()"
+                class="text-left text-xs uppercase tracking-[0.2em] text-red-400 flex items-center gap-2 pt-2">
+                <svg lucideLogOut class="size-4"></svg>
+                <span>Sair da Conta</span>
+            </button>
         </div>
     </nav>
 </header>

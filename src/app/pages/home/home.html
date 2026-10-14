@@ -146,40 +146,92 @@
                         <div *ngFor="let item of featuredProducts()"
                             class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-2 sm:px-3">
 
-                            <div class="group bg-rg-dark border border-rg-rose/20 rounded overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:border-rg-rose/60">
+                            <div class="group bg-rg-dark border border-rg-rose/20 rounded-md overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:border-rg-rose/60 hover:shadow-2xl">
 
-                                <!-- Imagem e Categoria -->
+                                <!-- Imagem e Badges (Categoria + Gênero) -->
                                 <div class="relative overflow-hidden aspect-[4/5] bg-black/40">
-                                    <img [src]="getImageUrl(item.imageUrl, item.category.name)" (error)="onImageError($event, item.category.name)" [alt]="item.name"
-                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    <a [routerLink]="['/produtos', item.id]" class="w-full h-full block">
+                                        <img [src]="getImageUrl(item.imageUrl, item.category.name)" (error)="onImageError($event, item.category.name)" [alt]="item.name"
+                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                    </a>
+
+                                    <!-- Badge Esquerdo: Categoria -->
                                     <span
-                                        class="absolute top-3 left-3 bg-rg-dark/85 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1">
+                                        class="absolute top-3 left-3 bg-rg-dark/90 border border-rg-rose/30 text-[9px] uppercase tracking-widest text-rg-rose px-2.5 py-1 rounded-sm shadow-md pointer-events-none">
                                         {{ item.category.name || 'Exclusivo' }}
+                                    </span>
+
+                                    <!-- Badge Direito: Gênero -->
+                                    <span
+                                        [class.bg-rose-950\/90]="(item.gender || 'FEMININO') === 'FEMININO'"
+                                        [class.text-rose-300]="(item.gender || 'FEMININO') === 'FEMININO'"
+                                        [class.border-rose-500\/40]="(item.gender || 'FEMININO') === 'FEMININO'"
+                                        [class.bg-amber-950\/90]="item.gender === 'UNISSEX'"
+                                        [class.text-amber-300]="item.gender === 'UNISSEX'"
+                                        [class.border-amber-500\/40]="item.gender === 'UNISSEX'"
+                                        [class.bg-orange-950\/90]="item.gender === 'MASCULINO'"
+                                        [class.text-orange-300]="item.gender === 'MASCULINO'"
+                                        [class.border-orange-500\/40]="item.gender === 'MASCULINO'"
+                                        class="absolute top-3 right-3 border text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-sm shadow-md pointer-events-none font-medium">
+                                        {{ item.gender || 'FEMININO' }}
                                     </span>
                                 </div>
 
                                 <!-- Informações de Compra -->
-                                <div class="p-5 flex flex-col flex-grow justify-between">
+                                <div class="p-5 flex flex-col flex-grow justify-between space-y-3">
                                     <div>
-                                        <span class="text-[9px] uppercase tracking-widest text-gray-400 block mb-1">
-                                            {{ item.category.name === 'FITNESS' ? 'Moda Fitness' : 'Semijoia de Luxo' }}
-                                        </span>
-                                        <h3
-                                            class="text-sm font-medium text-gray-200 group-hover:text-rg-rose transition-colors line-clamp-1">
-                                            {{ item.name }}
+                                        <!-- Tamanhos e Cores Visíveis -->
+                                        <div class="flex flex-wrap items-center justify-between gap-1 mb-2 min-h-[20px]">
+                                            <div class="flex flex-wrap gap-1">
+                                                <span *ngFor="let size of getAvailableSizes(item)"
+                                                    class="bg-rg-surface border border-rg-rose/25 text-[10px] font-mono px-1.5 py-0.5 text-gray-300 rounded-sm">
+                                                    {{ size }}
+                                                </span>
+                                                <span *ngIf="getAvailableSizes(item).length === 0" class="text-[10px] text-gray-500 italic">
+                                                    Tam. Único
+                                                </span>
+                                            </div>
+
+                                            <div *ngIf="getAvailableColors(item).length > 0" class="flex flex-wrap gap-1">
+                                                <span *ngFor="let color of getAvailableColors(item)"
+                                                    class="text-[9px] text-gray-400 bg-rg-surface/80 border border-rg-rose/15 px-1.5 py-0.5 rounded-sm">
+                                                    {{ color }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <h3 class="text-sm font-medium text-gray-100 group-hover:text-rg-rose transition-colors line-clamp-1">
+                                            <a [routerLink]="['/produtos', item.id]">{{ item.name }}</a>
                                         </h3>
-                                        <p class="text-lg font-serif text-rg-rose mt-2">
-                                            R$ {{ item.price.toFixed(2) }}
-                                        </p>
-                                        <p class="text-[11px] text-gray-400">
-                                            {{ getInstallments(item.price) }}
-                                        </p>
+
+                                        <div class="mt-2">
+                                            <p class="text-lg font-serif text-rg-rose font-medium">
+                                                R$ {{ item.price.toFixed(2) }}
+                                            </p>
+                                            <p class="text-[10px] text-gray-400">
+                                                {{ getInstallments(item.price) }}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <button [routerLink]="['/produtos', item.id]"
-                                        class="mt-5 w-full py-2.5 border border-rg-rose/50 text-rg-rose hover:bg-rg-rose hover:text-rg-dark text-[10px] tracking-[0.2em] uppercase transition-all duration-300 font-semibold">
-                                        Ver Detalhes
-                                    </button>
+                                    <!-- Ação Rápida de Compra (Sacola + Ver) -->
+                                    <div class="pt-2 border-t border-rg-rose/10 flex items-center gap-2">
+                                        <button type="button" (click)="quickAddToCart(item, $event)"
+                                            [class.bg-emerald-600]="addedProductId() === item.id"
+                                            [class.border-emerald-500]="addedProductId() === item.id"
+                                            [class.text-white]="addedProductId() === item.id"
+                                            class="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-rg-surface border border-rg-rose/40 text-rg-rose text-xs uppercase tracking-wider font-semibold rounded hover:bg-rg-rose hover:text-rg-dark transition-all duration-200">
+                                            <svg *ngIf="addedProductId() !== item.id" lucideShoppingBag class="size-3.5"></svg>
+                                            <svg *ngIf="addedProductId() === item.id" lucideCheck class="size-3.5 text-white"></svg>
+                                            <span>{{ addedProductId() === item.id ? 'Na Sacola!' : 'Sacola' }}</span>
+                                        </button>
+
+                                        <a [routerLink]="['/produtos', item.id]"
+                                            class="size-8 flex items-center justify-center border border-rg-rose/30 text-gray-400 hover:text-rg-rose hover:border-rg-rose rounded transition-colors"
+                                            title="Ver Detalhes">
+                                            <svg lucideEye class="size-4"></svg>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 

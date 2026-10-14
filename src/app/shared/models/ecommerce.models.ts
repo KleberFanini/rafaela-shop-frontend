@@ -18,6 +18,7 @@ export interface Product {
     description: string;
     price: number;
     imageUrl?: string;
+    gender?: 'FEMININO' | 'MASCULINO' | 'UNISSEX' | string;
     category: Category;
     variants: ProductVariant[];
     createdAt?: string;

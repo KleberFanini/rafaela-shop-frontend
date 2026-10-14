@@ -49,7 +49,8 @@ export class ProductForm implements OnInit {
     description: '',
     price: 0,
     imageUrl: '',
-    categoryId: null as number | null
+    categoryId: null as number | null,
+    gender: 'FEMININO'
   };
 
   variants = signal<ProductVariant[]>([
@@ -95,6 +96,7 @@ export class ProductForm implements OnInit {
         this.productData.price = prod.price;
         this.productData.imageUrl = prod.imageUrl || '';
         this.productData.categoryId = prod.category?.id || null;
+        this.productData.gender = prod.gender || 'FEMININO';
 
         if (prod.imageUrl) {
           this.imagePreview.set(prod.imageUrl);
@@ -179,6 +181,7 @@ export class ProductForm implements OnInit {
       imageUrl: imageUrl,
       categoryId: Number(this.productData.categoryId),
       category: { id: Number(this.productData.categoryId) } as Category,
+      gender: this.productData.gender,
       variants: this.variants()
     };
 

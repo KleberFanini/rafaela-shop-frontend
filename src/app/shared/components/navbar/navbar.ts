@@ -1,17 +1,18 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import {
-  LucideSearch,
   LucideUser,
   LucideChevronDown,
+  LucideShoppingBag,
   LucideHandbag,
   LucideMenu,
   LucideX,
   LucideLayoutDashboard,
   LucideLogOut,
-  LucideArrowRight
+  LucideArrowRight,
+  LucideMessageCircle,
+  LucideSparkles
 } from '@lucide/angular';
 import { CartService } from '../../../core/services/cart';
 import { AuthService } from '../../../core/services/auth';
@@ -22,16 +23,17 @@ import { AuthService } from '../../../core/services/auth';
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule,
-    LucideSearch,
     LucideUser,
     LucideChevronDown,
+    LucideShoppingBag,
     LucideHandbag,
     LucideMenu,
     LucideX,
     LucideLayoutDashboard,
     LucideLogOut,
-    LucideArrowRight
+    LucideArrowRight,
+    LucideMessageCircle,
+    LucideSparkles
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
@@ -39,22 +41,21 @@ import { AuthService } from '../../../core/services/auth';
 export class Navbar {
   private router = inject(Router);
   private cartService = inject(CartService);
-  public authService = inject(AuthService); // Injetado público para uso no HTML
+  public authService = inject(AuthService);
 
   menuOpen = signal(false);
-  searchOpen = signal(false);
-  searchQuery = signal('');
 
   cartCount = this.cartService.totalItemsCount;
+  cartSubtotal = this.cartService.subtotal;
 
-  navLinks = [
-    { label: 'NOVIDADES', route: '/produtos', queryParams: { sort: 'latest' } },
+  readonly whatsappUrl = 'https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20um%20atendimento%20VIP%20na%20Rafaela%20Gamero.';
+
+  navLinks: { label: string; route: string; queryParams?: Record<string, string> }[] = [
+    { label: 'INÍCIO', route: '/' },
+    { label: 'VITRINE', route: '/produtos' },
     { label: 'MODA FITNESS', route: '/produtos', queryParams: { category: 'FITNESS' } },
-    { label: 'SEMIJOIAS', route: '/produtos', queryParams: { category: 'SEMIJOIAS' } },
-    { label: 'DESTAQUES', route: '/', fragment: 'destaques' }
+    { label: 'SEMIJOIAS', route: '/produtos', queryParams: { category: 'SEMIJOIAS' } }
   ];
-
-  quickSearches = ['Legging Glow', 'Top Esculpido', 'Colar 18k', 'Brinco Argola'];
 
   toggleMenu() {
     this.menuOpen.update((v) => !v);
@@ -62,27 +63,6 @@ export class Navbar {
 
   closeMenu() {
     this.menuOpen.set(false);
-  }
-
-  toggleSearch() {
-    this.searchOpen.update((v) => !v);
-    if (!this.searchOpen()) {
-      this.searchQuery.set('');
-    }
-  }
-
-  performSearch() {
-    const query = this.searchQuery().trim();
-    if (query) {
-      this.searchOpen.set(false);
-      this.router.navigate(['/produtos'], { queryParams: { q: query } });
-      this.searchQuery.set('');
-    }
-  }
-
-  searchKeyword(keyword: string) {
-    this.searchOpen.set(false);
-    this.router.navigate(['/produtos'], { queryParams: { q: keyword } });
   }
 
   logout(): void {

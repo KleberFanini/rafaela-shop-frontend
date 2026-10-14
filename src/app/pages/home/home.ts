@@ -11,9 +11,13 @@ import {
   LucideLayers,
   LucideGem,
   LucideCircleDot,
-  LucideCircle
+  LucideCircle,
+  LucideShoppingBag,
+  LucideCheck,
+  LucideEye
 } from '@lucide/angular';
 import { ProductService } from '../../core/services/product';
+import { CartService } from '../../core/services/cart';
 import { Product } from '../../shared/models/ecommerce.models';
 import { environment } from '../../../environments/environment';
 
@@ -30,13 +34,17 @@ import { environment } from '../../../environments/environment';
     LucideLayers,
     LucideGem,
     LucideCircleDot,
-    LucideCircle
+    LucideCircle,
+    LucideShoppingBag,
+    LucideCheck,
+    LucideEye
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home implements OnInit, OnDestroy {
   private productService = inject(ProductService);
+  private cartService = inject(CartService);
   private title = inject(Title);
   private meta = inject(Meta);
 
@@ -48,6 +56,7 @@ export class Home implements OnInit, OnDestroy {
   loading = signal<boolean>(true);
   featuredProducts = signal<Product[]>([]);
   currentSlide = signal<number>(0);
+  addedProductId = signal<number | null>(null);
 
   private autoPlayTimer: any = null;
 
@@ -152,6 +161,35 @@ export class Home implements OnInit, OnDestroy {
   getInstallments(price: number): string {
     const installmentValue = (price / 3).toFixed(2);
     return `3x de R$ ${installmentValue} sem juros`;
+  }
+
+  getAvailableSizes(product: Product): string[] {
+    if (!product.variants || product.variants.length === 0) return [];
+    const sizes = product.variants
+      .map(v => v.size?.trim())
+      .filter((s): s is string => Boolean(s && s.length > 0));
+    return Array.from(new Set(sizes));
+  }
+
+  getAvailableColors(product: Product): string[] {
+    if (!product.variants || product.variants.length === 0) return [];
+    const colors = product.variants
+      .map(v => v.color?.trim())
+      .filter((c): c is string => Boolean(c && c.length > 0));
+    return Array.from(new Set(colors));
+  }
+
+  quickAddToCart(product: Product, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const availableVariant = product.variants?.find(v => v.stock > 0) || product.variants?.[0];
+    this.cartService.addItem(product, availableVariant, 1);
+
+    this.addedProductId.set(product.id || null);
+    setTimeout(() => {
+      this.addedProductId.set(null);
+    }, 1800);
   }
 
   getImageUrl(imageUrl?: string | null, categoryName?: string): string {

@@ -35,10 +35,25 @@
                             <span class="text-[9px] uppercase tracking-widest text-rg-rose">{{
                                 item.product.category.name }}</span>
                             <h3 class="text-sm font-medium text-gray-200">{{ item.product.name }}</h3>
-                            <p *ngIf="item.selectedVariant" class="text-xs text-gray-400 mt-0.5">
-                                Opção: {{ item.selectedVariant.size || item.selectedVariant.color }}
-                            </p>
-                            <p class="font-serif text-sm text-rg-rose mt-1">R$ {{ item.product.price.toFixed(2) }}</p>
+
+                            <!-- Detalhes da Variação (Tamanho e Cor Selecionada) -->
+                            <div *ngIf="item.selectedVariant" class="flex flex-wrap items-center gap-2 mt-1">
+                                <!-- Tamanho Selecionado -->
+                                <span *ngIf="item.selectedVariant.size"
+                                    class="inline-flex items-center px-2 py-0.5 rounded bg-rg-dark border border-rg-rose/25 text-[10px] text-gray-300 font-mono">
+                                    Tam: {{ item.selectedVariant.size }}
+                                </span>
+
+                                <!-- Cor Selecionada com Bolinha Visual -->
+                                <span *ngIf="item.selectedVariant.color"
+                                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-rg-dark border border-rg-rose/30 text-[10px] text-gray-200">
+                                    <span [style.background]="getColorStyle(item.selectedVariant.color)"
+                                        class="size-2.5 rounded-full ring-1 ring-black/40 border border-white/20 inline-block shrink-0"></span>
+                                    <span>Cor: <strong class="text-rg-rose font-medium">{{ item.selectedVariant.color }}</strong></span>
+                                </span>
+                            </div>
+
+                            <p class="font-serif text-sm text-rg-rose mt-1.5">R$ {{ item.product.price.toFixed(2) }}</p>
                         </div>
                     </div>
 

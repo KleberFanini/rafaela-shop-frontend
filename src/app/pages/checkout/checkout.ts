@@ -7,6 +7,7 @@ import { LucideCheck, LucideSparkles } from '@lucide/angular';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
 import { OrderService } from '../../core/services/order';
+import { getColorStyle } from '../../shared/utils/color.utils';
 
 @Component({
   selector: 'app-checkout',
@@ -15,6 +16,7 @@ import { OrderService } from '../../core/services/order';
   styleUrl: './checkout.css',
 })
 export class Checkout implements OnInit {
+  getColorStyle = getColorStyle;
   public cartService = inject(CartService);
   public authService = inject(AuthService);
   private orderService = inject(OrderService);

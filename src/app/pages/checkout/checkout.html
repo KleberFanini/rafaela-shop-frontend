@@ -241,9 +241,15 @@
                     <div *ngFor="let item of cartService.items()" class="flex justify-between items-center text-xs">
                         <div class="pr-2">
                             <p class="text-gray-200 font-medium">{{ item.quantity }}x {{ item.product.name }}</p>
-                            <p *ngIf="item.selectedVariant" class="text-[10px] text-gray-400">
-                                {{ item.selectedVariant.size || item.selectedVariant.color }}
-                            </p>
+                            <div *ngIf="item.selectedVariant" class="flex flex-wrap items-center gap-1.5 text-[10px] text-gray-400 mt-0.5">
+                                <span *ngIf="item.selectedVariant.size">Tam: {{ item.selectedVariant.size }}</span>
+                                <span *ngIf="item.selectedVariant.size && item.selectedVariant.color">&bull;</span>
+                                <span *ngIf="item.selectedVariant.color" class="inline-flex items-center gap-1 text-gray-300">
+                                    <span [style.background]="getColorStyle(item.selectedVariant.color)"
+                                        class="size-2 rounded-full border border-white/20 inline-block"></span>
+                                    <span>Cor: <strong class="text-rg-rose">{{ item.selectedVariant.color }}</strong></span>
+                                </span>
+                            </div>
                         </div>
                         <span class="text-rg-rose font-medium whitespace-nowrap">
                             R$ {{ (item.product.price * item.quantity).toFixed(2) }}

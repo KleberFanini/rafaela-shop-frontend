@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LucideMinus, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { CartService } from '../../core/services/cart';
+import { getColorStyle } from '../../shared/utils/color.utils';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -12,6 +13,8 @@ import { environment } from '../../../environments/environment';
   styleUrl: './cart.css',
 })
 export class Cart {
+  getColorStyle = getColorStyle;
+
   constructor(public cartService: CartService) { }
 
   increment(index: number, currentQty: number): void {

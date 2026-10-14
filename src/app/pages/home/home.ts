@@ -19,6 +19,7 @@ import {
 import { ProductService } from '../../core/services/product';
 import { CartService } from '../../core/services/cart';
 import { Product } from '../../shared/models/ecommerce.models';
+import { getColorStyle } from '../../shared/utils/color.utils';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -57,6 +58,8 @@ export class Home implements OnInit, OnDestroy {
   featuredProducts = signal<Product[]>([]);
   currentSlide = signal<number>(0);
   addedProductId = signal<number | null>(null);
+
+  getColorStyle = getColorStyle;
 
   private autoPlayTimer: any = null;
 

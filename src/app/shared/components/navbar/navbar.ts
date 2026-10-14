@@ -10,9 +10,7 @@ import {
   LucideX,
   LucideLayoutDashboard,
   LucideLogOut,
-  LucideArrowRight,
-  LucideMessageCircle,
-  LucideSparkles
+  LucideArrowRight
 } from '@lucide/angular';
 import { CartService } from '../../../core/services/cart';
 import { AuthService } from '../../../core/services/auth';
@@ -31,9 +29,7 @@ import { AuthService } from '../../../core/services/auth';
     LucideX,
     LucideLayoutDashboard,
     LucideLogOut,
-    LucideArrowRight,
-    LucideMessageCircle,
-    LucideSparkles
+    LucideArrowRight
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',

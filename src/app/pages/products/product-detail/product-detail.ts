@@ -8,11 +8,13 @@ import {
   LucidePlus,
   LucideShoppingBag,
   LucideShieldCheck,
-  LucideRefreshCw
+  LucideRefreshCw,
+  LucideCheck
 } from '@lucide/angular';
 import { ProductService } from '../../../core/services/product';
 import { Product, ProductVariant } from '../../../shared/models/ecommerce.models';
 import { CartService } from '../../../core/services/cart';
+import { getColorStyle } from '../../../shared/utils/color.utils';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -26,7 +28,8 @@ import { environment } from '../../../../environments/environment';
     LucidePlus,
     LucideShoppingBag,
     LucideShieldCheck,
-    LucideRefreshCw
+    LucideRefreshCw,
+    LucideCheck
   ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
@@ -37,6 +40,8 @@ export class ProductDetail implements OnInit {
   quantity = signal<number>(1);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+
+  getColorStyle = getColorStyle;
 
   constructor(
     private route: ActivatedRoute,
@@ -76,6 +81,16 @@ export class ProductDetail implements OnInit {
   selectVariant(variant: ProductVariant): void {
     this.selectedVariant.set(variant);
     this.quantity.set(1);
+  }
+
+  isVariantSelected(variant: ProductVariant): boolean {
+    const current = this.selectedVariant();
+    if (!current) return false;
+    if (current === variant) return true;
+    if (current.id != null && variant.id != null) {
+      return current.id === variant.id;
+    }
+    return current.size === variant.size && current.color === variant.color;
   }
 
   increaseQuantity(): void {

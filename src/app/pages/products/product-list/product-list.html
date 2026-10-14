@@ -19,7 +19,8 @@
                     {{ selectedCategoryName() === 'TODOS' ? 'Todas as Peças Exclusivas' : selectedCategoryName() }}
                 </h1>
                 <p class="text-xs text-gray-400 mt-1">
-                    Mostrando {{ filteredProducts().length }} {{ filteredProducts().length === 1 ? 'peça encontrada' : 'peças disponíveis' }}
+                    Mostrando {{ filteredProducts().length }} {{ filteredProducts().length === 1 ? 'peça encontrada' :
+                    'peças disponíveis' }}
                 </p>
             </div>
 
@@ -46,7 +47,8 @@
         <!-- Barra de Pílulas Horizontais (Departamentos & Categorias) -->
         <div class="space-y-4">
             <div>
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-medium">Departamentos & Linhas:</p>
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-medium">Departamentos & Linhas:
+                </p>
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
                     <button *ngFor="let pill of quickDepartmentPills" (click)="setCategory(pill.value)"
                         [class.bg-rg-rose]="selectedCategoryName().toUpperCase() === pill.value"
@@ -65,32 +67,28 @@
             <div class="flex items-center gap-2">
                 <span class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Gênero:</span>
                 <div class="flex gap-1.5">
-                    <button (click)="setGender('TODOS')"
-                        [class.bg-rg-rose/20]="selectedGender() === 'TODOS'"
+                    <button (click)="setGender('TODOS')" [class.bg-rg-rose/20]="selectedGender() === 'TODOS'"
                         [class.text-rg-rose]="selectedGender() === 'TODOS'"
                         [class.border-rg-rose]="selectedGender() === 'TODOS'"
-                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 text-gray-400 hover:text-gray-100 transition-all">
+                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 bg-rg-surface text-gray-400 hover:text-gray-100 transition-all shadow-sm">
                         Todos
                     </button>
-                    <button (click)="setGender('FEMININO')"
-                        [class.bg-rg-rose/20]="selectedGender() === 'FEMININO'"
+                    <button (click)="setGender('FEMININO')" [class.bg-rg-rose/20]="selectedGender() === 'FEMININO'"
                         [class.text-rg-rose]="selectedGender() === 'FEMININO'"
                         [class.border-rg-rose]="selectedGender() === 'FEMININO'"
-                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 text-gray-400 hover:text-gray-100 transition-all">
+                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 bg-rg-surface text-gray-400 hover:text-gray-100 transition-all shadow-sm">
                         Feminino
                     </button>
-                    <button (click)="setGender('MASCULINO')"
-                        [class.bg-rg-rose/20]="selectedGender() === 'MASCULINO'"
+                    <button (click)="setGender('MASCULINO')" [class.bg-rg-rose/20]="selectedGender() === 'MASCULINO'"
                         [class.text-rg-rose]="selectedGender() === 'MASCULINO'"
                         [class.border-rg-rose]="selectedGender() === 'MASCULINO'"
-                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 text-gray-400 hover:text-gray-100 transition-all">
+                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 bg-rg-surface text-gray-400 hover:text-gray-100 transition-all shadow-sm">
                         Masculino
                     </button>
-                    <button (click)="setGender('UNISSEX')"
-                        [class.bg-rg-rose/20]="selectedGender() === 'UNISSEX'"
+                    <button (click)="setGender('UNISSEX')" [class.bg-rg-rose/20]="selectedGender() === 'UNISSEX'"
                         [class.text-rg-rose]="selectedGender() === 'UNISSEX'"
                         [class.border-rg-rose]="selectedGender() === 'UNISSEX'"
-                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 text-gray-400 hover:text-gray-100 transition-all">
+                        class="px-3 py-1 text-[11px] uppercase tracking-wider rounded border border-rg-rose/20 bg-rg-surface text-gray-400 hover:text-gray-100 transition-all shadow-sm">
                         Unissex
                     </button>
                 </div>
@@ -123,18 +121,12 @@
                         {{ product.category.name }}
                     </span>
 
-                    <!-- Badge Superior Direito: Gênero -->
+                    <!-- Badge Superior Direito: Gênero com Fundo Fixo -->
                     <span
-                        [class.bg-rose-950\/90]="(product.gender || 'FEMININO') === 'FEMININO'"
+                        class="absolute top-3 right-3 bg-rg-dark/90 backdrop-blur-sm border border-rg-rose/30 text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-sm shadow-md pointer-events-none font-medium"
                         [class.text-rose-300]="(product.gender || 'FEMININO') === 'FEMININO'"
-                        [class.border-rose-500\/40]="(product.gender || 'FEMININO') === 'FEMININO'"
-                        [class.bg-amber-950\/90]="product.gender === 'UNISSEX'"
                         [class.text-amber-300]="product.gender === 'UNISSEX'"
-                        [class.border-amber-500\/40]="product.gender === 'UNISSEX'"
-                        [class.bg-orange-950\/90]="product.gender === 'MASCULINO'"
-                        [class.text-orange-300]="product.gender === 'MASCULINO'"
-                        [class.border-orange-500\/40]="product.gender === 'MASCULINO'"
-                        class="absolute top-3 right-3 border text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-sm shadow-md pointer-events-none font-medium">
+                        [class.text-orange-300]="product.gender === 'MASCULINO'">
                         {{ product.gender || 'FEMININO' }}
                     </span>
                 </div>
@@ -142,41 +134,45 @@
                 <!-- Informações e Detalhes da Peça -->
                 <div class="p-5 flex flex-col flex-grow justify-between space-y-4">
                     <div>
-                        <!-- Tamanhos e Cores Visíveis no Card -->
-                        <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2.5 min-h-[22px]">
-                            <!-- Pílulas de Tamanho -->
-                            <div class="flex flex-wrap gap-1">
-                                <span *ngFor="let size of getAvailableSizes(product)"
-                                    class="bg-rg-dark border border-rg-rose/25 text-[10px] font-mono px-1.5 py-0.5 text-gray-300 rounded-sm">
-                                    {{ size }}
-                                </span>
-                                <span *ngIf="getAvailableSizes(product).length === 0" class="text-[10px] text-gray-500 italic">
-                                    Tam. Único
-                                </span>
-                            </div>
-
-                            <!-- Pílulas / Tags de Cor -->
-                            <div *ngIf="getAvailableColors(product).length > 0" class="flex flex-wrap gap-1">
-                                <span *ngFor="let color of getAvailableColors(product)"
-                                    class="text-[9px] text-gray-400 bg-rg-dark/60 border border-rg-rose/15 px-1.5 py-0.5 rounded-sm">
-                                    {{ color }}
-                                </span>
-                            </div>
-                        </div>
-
                         <!-- Nome do Produto -->
-                        <h2 class="text-sm font-medium text-gray-100 group-hover:text-rg-rose transition-colors line-clamp-1">
+                        <h2
+                            class="text-sm font-medium text-gray-100 group-hover:text-rg-rose transition-colors line-clamp-1">
                             <a [routerLink]="['/produtos', product.id]">{{ product.name }}</a>
                         </h2>
 
                         <!-- Preço & Parcelas -->
-                        <div class="mt-2.5">
+                        <div class="mt-2.5 mb-2.5 min-h-[22px]">
                             <p class="font-serif text-xl text-rg-rose font-medium">
                                 R$ {{ product.price.toFixed(2) }}
                             </p>
                             <p class="text-[10px] text-gray-400 mt-0.5">
                                 ou até 3x de R$ {{ (product.price / 3).toFixed(2) }} sem juros
                             </p>
+                        </div>
+
+
+                        <!-- Tamanhos e Cores Visíveis no Card -->
+                        <div class="flex flex-wrap items-center justify-between gap-1.5">
+                            <!-- Pílulas de Tamanho -->
+                            <div class="flex flex-wrap gap-1">
+                                <span *ngFor="let size of getAvailableSizes(product)"
+                                    class="bg-rg-dark border border-rg-rose/25 text-[10px] font-mono px-1.5 py-0.5 text-gray-300 rounded-sm">
+                                    {{ size }}
+                                </span>
+                                <span *ngIf="getAvailableSizes(product).length === 0"
+                                    class="text-[10px] text-gray-500 italic">
+                                    Tam. Único
+                                </span>
+                            </div>
+
+                            <!-- Bolinhas de Cores Visíveis com Tooltip de Nome -->
+                            <div *ngIf="getAvailableColors(product).length > 0" class="flex items-center gap-1.5 py-0.5"
+                                title="Cores disponíveis">
+                                <span *ngFor="let color of getAvailableColors(product)" [title]="color"
+                                    [style.background]="getColorStyle(color)"
+                                    class="size-3.5 rounded-full ring-1 ring-black/40 shadow-sm border border-white/20 transition-all duration-200 hover:scale-125 inline-block shrink-0 cursor-pointer">
+                                </span>
+                            </div>
                         </div>
                     </div>
 

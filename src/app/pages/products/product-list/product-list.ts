@@ -12,6 +12,7 @@ import {
 import { Product, Category, ProductVariant } from '../../../shared/models/ecommerce.models';
 import { ProductService } from '../../../core/services/product';
 import { CartService } from '../../../core/services/cart';
+import { getColorStyle } from '../../../shared/utils/color.utils';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -44,6 +45,8 @@ export class ProductList implements OnInit {
 
   // Feedback temporário de produto adicionado
   addedProductId = signal<number | null>(null);
+
+  getColorStyle = getColorStyle;
 
   // Subcategorias rápidas para as pílulas de navegação
   readonly quickDepartmentPills = [

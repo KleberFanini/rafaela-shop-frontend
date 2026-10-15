@@ -1,26 +1,278 @@
-<footer id="footer" class="border-t border-rg-rose/40 bg-rg-dark px-6 py-14 sm:px-10 sm:py-20">
-    <div class="mx-auto grid max-w-[1400px] items-center gap-12 lg:grid-cols-[1fr_auto_240px]">
-        <div>
-            <p class="font-serif text-2xl tracking-[0.18em] text-gray-100 sm:text-4xl">Rafaela Gamero</p>
-            <div class="mt-5 flex items-center gap-4">
-                <span class="h-px w-14 bg-rg-rose/60 sm:w-24"></span>
-                <span class="text-xs text-rg-rose">◇</span>
-                <span class="h-px w-14 bg-rg-rose/60 sm:w-24"></span>
+<footer id="footer" class="border-t border-rg-rose/30 bg-rg-dark text-gray-300 pt-16 pb-12 px-6 sm:px-10 lg:px-16">
+    <div class="mx-auto max-w-[1400px]">
+
+        <!-- Grid Principal do Rodapé (4 Colunas) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-14 border-b border-rg-rose/15">
+
+            <!-- Coluna 1: Sobre a Marca -->
+            <div class="space-y-4">
+                <div>
+                    <h2 class="font-serif text-2xl tracking-[0.18em] text-gray-100 font-medium">RAFAELA GAMERO</h2>
+                    <p class="text-[9px] uppercase tracking-[0.35em] text-rg-rose mt-0.5">Fitness &bull; Luxury</p>
+                </div>
+                <p class="text-xs text-gray-400 font-light leading-relaxed">
+                    Moda fitness de alta compressão e semijoias com acabamento nobre em ouro e prata. Feitas para acompanhar seu ritmo com elegância e durabilidade.
+                </p>
+                <div class="pt-2 flex flex-col gap-2 text-[11px] text-gray-400">
+                    <span class="flex items-center gap-2">
+                        <svg lucideTruck class="size-3.5 text-rg-rose"></svg>
+                        <span>Enviamos Para Todo o Brasil</span>
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <svg lucideShieldCheck class="size-3.5 text-rg-rose"></svg>
+                        <span>Compra 100% Segura e Criptografada</span>
+                    </span>
+                </div>
             </div>
-            <p class="mt-5 text-[9px] tracking-[0.25em] text-gray-400 sm:text-[11px]">
-                FITNESS <span class="px-2 text-rg-rose">◆</span> LIFESTYLE <span class="px-2 text-rg-rose">◆</span>
-                LUXURY
-            </p>
+
+            <!-- Coluna 2: Políticas & Atendimento -->
+            <div class="space-y-3">
+                <h3 class="text-xs uppercase tracking-[0.25em] text-rg-rose font-medium mb-4 flex items-center gap-1.5">
+                    <span>Atendimento & Ajuda</span>
+                </h3>
+                <ul class="space-y-2.5 text-xs">
+                    <li>
+                        <button type="button" (click)="openPolicy('envios')"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2 text-left">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Prazos e Formas de Envio</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" (click)="openPolicy('trocas')"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2 text-left">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Trocas e Devoluções (CDC)</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" (click)="openPolicy('pagamentos')"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2 text-left">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Segurança e Formas de Pagamento</span>
+                        </button>
+                    </li>
+                    <li>
+                        <a routerLink="/produtos"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Catálogo Completo</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Coluna 3: Guia de Cuidados & Durabilidade -->
+            <div class="space-y-3">
+                <h3 class="text-xs uppercase tracking-[0.25em] text-rg-rose font-medium mb-4 flex items-center gap-1.5">
+                    <span>Cuidados com as Peças</span>
+                </h3>
+                <p class="text-[11px] text-gray-400 font-light leading-relaxed mb-3">
+                    Preserve o brilho das suas semijoias e a tecnologia das suas peças fitness:
+                </p>
+                <ul class="space-y-2.5 text-xs">
+                    <li>
+                        <button type="button" (click)="openPolicy('cuidados')"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2 text-left">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Como Cuidar das Suas Semijoias</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" (click)="openPolicy('cuidados')"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2 text-left">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Lavagem de Roupas Fitness</span>
+                        </button>
+                    </li>
+                    <li>
+                        <a routerLink="/carrinho"
+                            class="text-gray-400 hover:text-rg-rose transition-colors flex items-center gap-2">
+                            <span class="text-rg-rose/60">&rsaquo;</span>
+                            <span>Minha Sacola de Compras</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Coluna 4: Pagamentos & Segurança -->
+            <div class="space-y-4">
+                <h3 class="text-xs uppercase tracking-[0.25em] text-rg-rose font-medium mb-4">
+                    Pagamento & Segurança
+                </h3>
+
+                <div class="space-y-2 text-xs text-gray-400 font-light">
+                    <p class="flex items-center gap-2 text-gray-300">
+                        <svg lucideCreditCard class="size-4 text-rg-rose"></svg>
+                        <span>Parcele em até <strong>3x sem juros</strong> no cartão</span>
+                    </p>
+                    <p class="flex items-center gap-2 text-gray-300">
+                        <svg lucideSparkles class="size-4 text-rg-rose"></svg>
+                        <span>PIX com aprovação instantânea</span>
+                    </p>
+                </div>
+
+                <!-- Selos de Segurança -->
+                <div class="pt-2">
+                    <div class="p-3 bg-rg-surface border border-rg-rose/20 rounded flex items-center gap-3">
+                        <svg lucideShieldCheck class="size-6 text-emerald-400 shrink-0"></svg>
+                        <div>
+                            <p class="text-[10px] font-semibold text-gray-200 uppercase tracking-wider">Site 100% Protegido</p>
+                            <p class="text-[9px] text-gray-400">Certificado SSL de Navegação Segura</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="hidden h-32 w-px bg-rg-rose/50 lg:block"></div>
+        <!-- Linha Inferior de Copyright -->
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+            <p>© 2026 RAFAELA GAMERO MULTIMARCAS. Todos os direitos reservados.</p>
+            <p class="text-[11px] tracking-wider uppercase text-gray-400">Moda Fitness &bull; Semijoias de Luxo</p>
+        </div>
 
-        <div class="flex items-center justify-between border-t border-rg-rose/20 pt-8 lg:border-0 lg:pt-0">
-            <div>
-                <p class="text-[10px] tracking-[0.24em] text-gray-300">FOLLOW THE JOURNEY</p>
-                <p class="mt-3 text-xs text-gray-500">© 2026 RAFAELA GAMERO</p>
+    </div>
+
+    <!-- MODAL DE POLÍTICAS INTERATIVO -->
+    <div *ngIf="activePolicy()" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <!-- Backdrop -->
+        <div (click)="closePolicy()" class="fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity"></div>
+
+        <!-- Conteúdo do Modal -->
+        <div class="relative bg-rg-surface border border-rg-rose/40 max-w-2xl w-full p-6 sm:p-8 shadow-2xl z-10 my-8 rounded max-h-[85vh] overflow-y-auto text-gray-300">
+
+            <!-- Cabeçalho do Modal -->
+            <div class="flex items-center justify-between border-b border-rg-rose/20 pb-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded bg-rg-dark border border-rg-rose/30 text-rg-rose">
+                        <svg *ngIf="activePolicy() === 'envios'" lucideTruck class="size-5"></svg>
+                        <svg *ngIf="activePolicy() === 'trocas'" lucideRefreshCw class="size-5"></svg>
+                        <svg *ngIf="activePolicy() === 'cuidados'" lucideSparkles class="size-5"></svg>
+                        <svg *ngIf="activePolicy() === 'pagamentos'" lucideShieldCheck class="size-5"></svg>
+                    </div>
+                    <div>
+                        <h2 class="font-serif text-xl sm:text-2xl text-gray-100">
+                            <span *ngIf="activePolicy() === 'envios'">Prazos e Formas de Envio</span>
+                            <span *ngIf="activePolicy() === 'trocas'">Política de Trocas e Devoluções</span>
+                            <span *ngIf="activePolicy() === 'cuidados'">Guia de Cuidados com as Peças</span>
+                            <span *ngIf="activePolicy() === 'pagamentos'">Segurança e Formas de Pagamento</span>
+                        </h2>
+                        <p class="text-[10px] uppercase tracking-widest text-rg-rose">Rafaela Gamero &bull; Transparência & Confiança</p>
+                    </div>
+                </div>
+
+                <button type="button" (click)="closePolicy()"
+                    class="p-2 text-gray-400 hover:text-rg-rose transition-colors rounded-sm border border-transparent hover:border-rg-rose/30"
+                    title="Fechar política">
+                    <svg lucideX class="size-5"></svg>
+                </button>
             </div>
-            <span class="font-serif text-6xl text-rg-rose">RG</span>
+
+            <!-- CORPO: PRAZOS E ENVIOS -->
+            <div *ngIf="activePolicy() === 'envios'" class="space-y-4 text-xs font-light leading-relaxed">
+                <div class="p-4 bg-rg-dark border border-rg-rose/20 rounded">
+                    <h3 class="font-semibold text-gray-100 text-sm mb-1">📦 Envio para Todo o Brasil</h3>
+                    <p class="text-gray-400">Todos os pedidos são embalados cuidadosamente e postados com código de rastreamento via Correios (Sedex ou PAC) ou transportadoras parceiras.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">1. Prazos de Postagem</h4>
+                    <p>Após a confirmação do pagamento, seu pedido é separado, revisado minuciosamente e postado em até <strong>24 a 48 horas úteis</strong>.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">2. Prazos de Entrega</h4>
+                    <p>O prazo final de entrega é estimado no momento do checkout e varia de acordo com o seu CEP e modalidade escolhida (Sedex: em média 2 a 5 dias úteis; PAC: em média 5 a 12 dias úteis).</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">3. Rastreamento</h4>
+                    <p>Assim que o pacote for despachado, você receberá a notificação com o código de rastreio para acompanhar o trajeto da sua encomenda até a entrega.</p>
+                </div>
+            </div>
+
+            <!-- CORPO: TROCAS E DEVOLUÇÕES (CDC) -->
+            <div *ngIf="activePolicy() === 'trocas'" class="space-y-4 text-xs font-light leading-relaxed">
+                <div class="p-4 bg-rg-dark border border-rg-rose/20 rounded">
+                    <h3 class="font-semibold text-gray-100 text-sm mb-1 flex items-center gap-2">
+                        <svg lucideHeartHandshake class="size-4 text-rg-rose"></svg>
+                        <span>Garantia de Satisfação e Código de Defesa do Consumidor</span>
+                    </h3>
+                    <p class="text-gray-400">Queremos que você ame cada peça. Caso precise trocar o tamanho ou modelo, o procedimento é simples e sem complicações.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">1. Devolução por Arrependimento (Art. 49 do CDC)</h4>
+                    <p>Conforme a lei brasileira, você tem até <strong>7 (sete) dias corridos</strong> a partir do recebimento da encomenda para solicitar a devolução e o reembolso integral do valor pago.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">2. Troca por Tamanho ou Defeito</h4>
+                    <p>Oferecemos até <strong>30 dias corridos</strong> para troca de numeração/modelo ou em caso de defeito de fabricação comprovado.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">3. Condições das Peças</h4>
+                    <p>A peça não deve apresentar sinais de uso, lavagem, manchas, odores ou alterações. Etiquetas e lacres originais devem estar fixados e a embalagem preservada.</p>
+                </div>
+            </div>
+
+            <!-- CORPO: CUIDADOS COM AS PEÇAS -->
+            <div *ngIf="activePolicy() === 'cuidados'" class="space-y-5 text-xs font-light leading-relaxed">
+                <div class="p-4 bg-rg-dark border border-rg-rose/20 rounded space-y-2">
+                    <h3 class="font-semibold text-gray-100 text-sm flex items-center gap-2">
+                        <svg lucideSparkles class="size-4 text-rg-rose"></svg>
+                        <span>Como Cuidar das Suas Semijoias</span>
+                    </h3>
+                    <p class="text-gray-400">Nossas peças recebem camadas nobres de banho de Ouro 18k e Prata com verniz protetor antialérgico. Siga as orientações abaixo para mantê-las brilhantes por anos:</p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-300 pt-1">
+                        <li><strong>Evite contato direto com cosméticos:</strong> aplique perfumes, cremes, maquiagem e sprays de cabelo antes de colocar suas semijoias, aguardando secar por alguns minutos.</li>
+                        <li><strong>Retire antes do banho, mar ou piscina:</strong> cloro, sal e produtos químicos desgastam gradualmente o banho nobre.</li>
+                        <li><strong>Limpeza simples:</strong> limpe apenas com uma flanela seca e macia. Não utilize produtos abrasivos ou pasta de dente.</li>
+                        <li><strong>Armazenamento:</strong> guarde as peças individualmente em saquinhos de tecido para evitar atrito e arranhões.</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 bg-rg-dark border border-rg-rose/20 rounded space-y-2">
+                    <h3 class="font-semibold text-gray-100 text-sm flex items-center gap-2">
+                        <svg lucideRefreshCw class="size-4 text-rg-rose"></svg>
+                        <span>Como Conservar Suas Roupas Fitness</span>
+                    </h3>
+                    <ul class="list-disc list-inside space-y-1 text-gray-300">
+                        <li><strong>Lavagem delicada:</strong> dê preferência à lavagem à mão ou ciclo delicado com água fria e sabão neutro.</li>
+                        <li><strong>Não use amaciante em tecidos dry-fit:</strong> o amaciante entope os micropóros respiráveis do elastano/poliamida, prejudicando a evaporação do suor.</li>
+                        <li><strong>Secagem à sombra:</strong> evite secadora quente e exposição solar direta para manter as fibras elásticas firmes e as cores vivas.</li>
+                        <li><strong>Não passar ferro:</strong> tecidos tecnológicos não amarrotam e o calor do ferro pode danificar apliques e elasticidade.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CORPO: SEGURANÇA E PAGAMENTOS -->
+            <div *ngIf="activePolicy() === 'pagamentos'" class="space-y-4 text-xs font-light leading-relaxed">
+                <div class="p-4 bg-rg-dark border border-rg-rose/20 rounded">
+                    <h3 class="font-semibold text-gray-100 text-sm mb-1 flex items-center gap-2">
+                        <svg lucideShieldCheck class="size-4 text-emerald-400"></svg>
+                        <span>Ambiente 100% Criptografado e Confiável</span>
+                    </h3>
+                    <p class="text-gray-400">Todos os seus dados pessoais, endereços e informações de pagamento trafegam criptografados de ponta a ponta com certificados SSL internacionais.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">1. PIX Instantâneo</h4>
+                    <p>Pagamento aprovado na hora, garantindo prioridade imediata na separação e embalagem do seu pedido.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">2. Cartão de Crédito</h4>
+                    <p>Parcele suas compras em até <strong>3x sem juros</strong> com total segurança e antifraude integrado.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-medium text-rg-rose uppercase tracking-wider text-[11px]">3. Privacidade dos Dados</h4>
+                    <p>Não compartilhamos nem vendemos seus dados para terceiros. Seus dados são utilizados exclusivamente para o processamento e entrega do seu pedido.</p>
+                </div>
+            </div>
+
+            <!-- Botão de Fechar no Rodapé do Modal -->
+            <div class="mt-8 pt-4 border-t border-rg-rose/20 flex justify-end">
+                <button type="button" (click)="closePolicy()"
+                    class="px-6 py-2.5 bg-rg-rose text-rg-dark text-xs uppercase tracking-wider font-semibold border border-rg-rose hover:bg-transparent hover:text-rg-rose transition-all">
+                    Fechar
+                </button>
+            </div>
+
         </div>
     </div>
 </footer>

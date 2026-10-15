@@ -9,7 +9,11 @@ import {
   LucideShoppingBag,
   LucideShieldCheck,
   LucideRefreshCw,
-  LucideCheck
+  LucideCheck,
+  LucideRuler,
+  LucideX,
+  LucideInfo,
+  LucideSparkles
 } from '@lucide/angular';
 import { ProductService } from '../../../core/services/product';
 import { Product, ProductVariant } from '../../../shared/models/ecommerce.models';
@@ -29,7 +33,11 @@ import { environment } from '../../../../environments/environment';
     LucideShoppingBag,
     LucideShieldCheck,
     LucideRefreshCw,
-    LucideCheck
+    LucideCheck,
+    LucideRuler,
+    LucideX,
+    LucideInfo,
+    LucideSparkles
   ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
@@ -40,6 +48,10 @@ export class ProductDetail implements OnInit {
   quantity = signal<number>(1);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+
+  // Controle do Modal de Guia de Medidas
+  isSizeGuideOpen = signal<boolean>(false);
+  activeGuideTab = signal<'fitness' | 'semijoias'>('fitness');
 
   getColorStyle = getColorStyle;
 
@@ -91,6 +103,23 @@ export class ProductDetail implements OnInit {
       return current.id === variant.id;
     }
     return current.size === variant.size && current.color === variant.color;
+  }
+
+  openSizeGuide(): void {
+    if (this.product()?.category?.name === 'SEMIJOIAS') {
+      this.activeGuideTab.set('semijoias');
+    } else {
+      this.activeGuideTab.set('fitness');
+    }
+    this.isSizeGuideOpen.set(true);
+  }
+
+  closeSizeGuide(): void {
+    this.isSizeGuideOpen.set(false);
+  }
+
+  setGuideTab(tab: 'fitness' | 'semijoias'): void {
+    this.activeGuideTab.set(tab);
   }
 
   increaseQuantity(): void {

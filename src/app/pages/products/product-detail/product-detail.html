@@ -60,9 +60,16 @@
 
                 <!-- Seletor de Variações -->
                 <div *ngIf="product()?.variants && product()!.variants.length > 0" class="mt-8">
-                    <label class="text-xs uppercase tracking-widest text-gray-300 block mb-3 font-medium">
-                        Selecione a Opção / Tamanho:
-                    </label>
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="text-xs uppercase tracking-widest text-gray-300 font-medium">
+                            Selecione a Opção / Tamanho:
+                        </label>
+                        <button type="button" (click)="openSizeGuide()"
+                            class="inline-flex items-center gap-1.5 text-xs text-rg-rose hover:text-rg-roseLight transition-colors underline-offset-4 hover:underline cursor-pointer">
+                            <svg lucideRuler class="size-3.5"></svg>
+                            <span>Guia de Medidas</span>
+                        </button>
+                    </div>
 
                     <div class="flex flex-wrap gap-3">
                         <button *ngFor="let v of product()?.variants" type="button" (click)="selectVariant(v)"
@@ -142,5 +149,196 @@
 
         </div>
 
+    </div>
+
+    <!-- Modal: Guia de Medidas & Tamanhos -->
+    <div *ngIf="isSizeGuideOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <!-- Backdrop -->
+        <div (click)="closeSizeGuide()" class="fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity"></div>
+
+        <!-- Conteúdo do Modal -->
+        <div class="relative bg-rg-surface border border-rg-rose/40 max-w-2xl w-full p-6 sm:p-8 shadow-2xl z-10 my-8 rounded max-h-[90vh] overflow-y-auto">
+            <!-- Cabeçalho do Modal -->
+            <div class="flex items-center justify-between border-b border-rg-rose/20 pb-4 mb-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 rounded bg-rg-dark border border-rg-rose/30 text-rg-rose">
+                        <svg lucideRuler class="size-5"></svg>
+                    </div>
+                    <div>
+                        <h2 class="font-serif text-xl sm:text-2xl text-gray-100">Guia de Medidas</h2>
+                        <p class="text-[10px] uppercase tracking-widest text-rg-rose">Encontre o caimento ideal para você</p>
+                    </div>
+                </div>
+
+                <button type="button" (click)="closeSizeGuide()"
+                    class="p-2 text-gray-400 hover:text-rg-rose transition-colors rounded-sm border border-transparent hover:border-rg-rose/30"
+                    title="Fechar guia">
+                    <svg lucideX class="size-5"></svg>
+                </button>
+            </div>
+
+            <!-- Abas do Modal -->
+            <div class="flex border-b border-rg-rose/20 mb-6 gap-2">
+                <button type="button" (click)="setGuideTab('fitness')"
+                    [class.border-rg-rose]="activeGuideTab() === 'fitness'"
+                    [class.text-rg-rose]="activeGuideTab() === 'fitness'"
+                    [class.font-semibold]="activeGuideTab() === 'fitness'"
+                    [class.border-transparent]="activeGuideTab() !== 'fitness'"
+                    [class.text-gray-400]="activeGuideTab() !== 'fitness'"
+                    class="pb-3 px-4 text-xs uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 hover:text-rg-rose">
+                    <svg lucideSparkles class="size-3.5"></svg>
+                    <span>Moda Fitness</span>
+                </button>
+
+                <button type="button" (click)="setGuideTab('semijoias')"
+                    [class.border-rg-rose]="activeGuideTab() === 'semijoias'"
+                    [class.text-rg-rose]="activeGuideTab() === 'semijoias'"
+                    [class.font-semibold]="activeGuideTab() === 'semijoias'"
+                    [class.border-transparent]="activeGuideTab() !== 'semijoias'"
+                    [class.text-gray-400]="activeGuideTab() !== 'semijoias'"
+                    class="pb-3 px-4 text-xs uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 hover:text-rg-rose">
+                    <svg lucideSparkles class="size-3.5"></svg>
+                    <span>Semijoias & Anéis</span>
+                </button>
+            </div>
+
+            <!-- CONTEÚDO DA ABA 1: MODA FITNESS -->
+            <div *ngIf="activeGuideTab() === 'fitness'" class="space-y-6">
+                <!-- Tabela de Medidas Fitness -->
+                <div class="overflow-x-auto border border-rg-rose/20 rounded bg-rg-dark/60">
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="bg-rg-dark border-b border-rg-rose/20 text-rg-rose uppercase text-[10px] tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Tamanho</th>
+                                <th class="py-3 px-4">Manequim</th>
+                                <th class="py-3 px-4">Busto (cm)</th>
+                                <th class="py-3 px-4">Cintura (cm)</th>
+                                <th class="py-3 px-4">Quadril (cm)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-rg-rose/10 font-mono">
+                            <tr class="hover:bg-rg-surface/60 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-rg-rose">P</td>
+                                <td class="py-3 px-4 text-gray-200">36 - 38</td>
+                                <td class="py-3 px-4 text-gray-400">82 - 88 cm</td>
+                                <td class="py-3 px-4 text-gray-400">64 - 70 cm</td>
+                                <td class="py-3 px-4 text-gray-400">90 - 96 cm</td>
+                            </tr>
+                            <tr class="hover:bg-rg-surface/60 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-rg-rose">M</td>
+                                <td class="py-3 px-4 text-gray-200">40 - 42</td>
+                                <td class="py-3 px-4 text-gray-400">89 - 96 cm</td>
+                                <td class="py-3 px-4 text-gray-400">71 - 78 cm</td>
+                                <td class="py-3 px-4 text-gray-400">97 - 104 cm</td>
+                            </tr>
+                            <tr class="hover:bg-rg-surface/60 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-rg-rose">G</td>
+                                <td class="py-3 px-4 text-gray-200">44 - 46</td>
+                                <td class="py-3 px-4 text-gray-400">97 - 104 cm</td>
+                                <td class="py-3 px-4 text-gray-400">79 - 86 cm</td>
+                                <td class="py-3 px-4 text-gray-400">105 - 112 cm</td>
+                            </tr>
+                            <tr class="hover:bg-rg-surface/60 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-rg-rose">GG</td>
+                                <td class="py-3 px-4 text-gray-200">48 - 50</td>
+                                <td class="py-3 px-4 text-gray-400">105 - 114 cm</td>
+                                <td class="py-3 px-4 text-gray-400">87 - 96 cm</td>
+                                <td class="py-3 px-4 text-gray-400">113 - 122 cm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Dicas de Como Medir -->
+                <div class="p-4 bg-rg-dark border border-rg-rose/25 rounded space-y-3">
+                    <div class="flex items-center gap-2 text-rg-rose text-xs font-semibold uppercase tracking-wider">
+                        <svg lucideInfo class="size-4"></svg>
+                        <span>Como Tirar Suas Medidas (Com Fita Métrica):</span>
+                    </div>
+                    <ul class="text-xs text-gray-300 space-y-1.5 list-disc list-inside font-light">
+                        <li><strong class="text-gray-100 font-medium">Busto:</strong> Meça na parte mais saliente do tórax, passando a fita pelas costas.</li>
+                        <li><strong class="text-gray-100 font-medium">Cintura:</strong> Meça na parte mais fina da cintura, cerca de 2 dedos acima do umbigo.</li>
+                        <li><strong class="text-gray-100 font-medium">Quadril:</strong> Meça na parte mais larga do quadril/glúteo, mantendo os pés juntos.</li>
+                    </ul>
+                    <p class="text-[11px] text-gray-400 italic">
+                        💡 Nossos tecidos fitness possuem alta compressão com elasticidade (Poliamida & Elastano). Se suas medidas estiverem entre dois tamanhos, opte pelo menor para maior compressão ou pelo maior para mais conforto.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO DA ABA 2: SEMIJOIAS -->
+            <div *ngIf="activeGuideTab() === 'semijoias'" class="space-y-6">
+                <!-- Tabela de Anéis -->
+                <div>
+                    <h3 class="text-xs uppercase tracking-widest text-rg-rose font-medium mb-3 flex items-center gap-1.5">
+                        <span>Tabela de Tamanhos para Anéis</span>
+                    </h3>
+                    <div class="overflow-x-auto border border-rg-rose/20 rounded bg-rg-dark/60">
+                        <table class="w-full text-left text-xs text-gray-300">
+                            <thead class="bg-rg-dark border-b border-rg-rose/20 text-rg-rose uppercase text-[10px] tracking-wider font-mono">
+                                <tr>
+                                    <th class="py-2.5 px-3">Aro</th>
+                                    <th class="py-2.5 px-3">Diâmetro Interno</th>
+                                    <th class="py-2.5 px-3">Circunferência do Dedo</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-rg-rose/10 font-mono text-[11px]">
+                                <tr><td class="py-2 px-3 font-semibold text-rg-rose">Aro 14</td><td class="py-2 px-3">15,2 mm</td><td class="py-2 px-3 text-gray-400">5,4 cm</td></tr>
+                                <tr><td class="py-2 px-3 font-semibold text-rg-rose">Aro 16</td><td class="py-2 px-3">16,2 mm</td><td class="py-2 px-3 text-gray-400">5,6 cm</td></tr>
+                                <tr><td class="py-2 px-3 font-semibold text-rg-rose">Aro 18</td><td class="py-2 px-3">17,2 mm</td><td class="py-2 px-3 text-gray-400">5,8 cm</td></tr>
+                                <tr><td class="py-2 px-3 font-semibold text-rg-rose">Aro 20</td><td class="py-2 px-3">18,2 mm</td><td class="py-2 px-3 text-gray-400">6,0 cm</td></tr>
+                                <tr><td class="py-2 px-3 font-semibold text-rg-rose">Aro 22</td><td class="py-2 px-3">19,2 mm</td><td class="py-2 px-3 text-gray-400">6,2 cm</td></tr>
+                                <tr><td class="py-2 px-3 font-semibold text-rg-rose">Aro 24</td><td class="py-2 px-3">20,2 mm</td><td class="py-2 px-3 text-gray-400">6,4 cm</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Método da Linha para Anéis -->
+                <div class="p-4 bg-rg-dark border border-rg-rose/25 rounded space-y-2 text-xs text-gray-300">
+                    <p class="font-semibold text-gray-100 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                        <svg lucideInfo class="size-4 text-rg-rose"></svg>
+                        <span>Como medir o dedo com uma linha em casa:</span>
+                    </p>
+                    <ol class="list-decimal list-inside space-y-1 font-light">
+                        <li>Dê uma volta com um barbante ou fita ao redor da junta do dedo.</li>
+                        <li>Marque a medida exata onde as pontas se encontram.</li>
+                        <li>Estique o barbante sobre uma régua e confira a medida na coluna <em>Circunferência</em> acima.</li>
+                    </ol>
+                </div>
+
+                <!-- Guia de Colares & Chokers -->
+                <div class="pt-3 border-t border-rg-rose/15">
+                    <h3 class="text-xs uppercase tracking-widest text-rg-rose font-medium mb-3">
+                        Comprimento de Colares e Chokers:
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                        <div class="p-3 bg-rg-dark border border-rg-rose/20 rounded">
+                            <span class="font-mono text-rg-rose font-semibold block">35 a 40 cm</span>
+                            <span class="text-gray-200 font-medium block mt-1">Choker / Gargantilha</span>
+                            <p class="text-[11px] text-gray-400 mt-1">Fica justo rente à base do pescoço.</p>
+                        </div>
+                        <div class="p-3 bg-rg-dark border border-rg-rose/20 rounded">
+                            <span class="font-mono text-rg-rose font-semibold block">45 a 50 cm</span>
+                            <span class="text-gray-200 font-medium block mt-1">Colar Médio (Clássico)</span>
+                            <p class="text-[11px] text-gray-400 mt-1">Fica na altura da clavícula/colo.</p>
+                        </div>
+                        <div class="p-3 bg-rg-dark border border-rg-rose/20 rounded">
+                            <span class="font-mono text-rg-rose font-semibold block">60 a 70 cm</span>
+                            <span class="text-gray-200 font-medium block mt-1">Colar Longo</span>
+                            <p class="text-[11px] text-gray-400 mt-1">Fica na linha do busto, ideal para sobreposições.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de Fechar no Rodapé do Modal -->
+            <div class="mt-8 pt-4 border-t border-rg-rose/20 flex justify-end">
+                <button type="button" (click)="closeSizeGuide()"
+                    class="px-6 py-2.5 bg-rg-rose text-rg-dark text-xs uppercase tracking-wider font-semibold border border-rg-rose hover:bg-transparent hover:text-rg-rose transition-all">
+                    Entendi, Fechar
+                </button>
+            </div>
+        </div>
     </div>
 </section>

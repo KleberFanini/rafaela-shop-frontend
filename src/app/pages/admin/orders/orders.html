@@ -1,65 +1,283 @@
 <section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8 lg:px-12">
-    <div class="max-w-[1300px] mx-auto space-y-10">
+    <div class="max-w-[1300px] mx-auto space-y-8">
 
         <!-- Cabeçalho de Navegação de Pedidos -->
-        <header class="flex justify-between items-center border-b border-rg-rose/20 pb-6">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-rg-rose/20 pb-6">
             <div>
                 <a routerLink="/admin/dashboard" class="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors mb-2">
                     <svg lucideArrowLeft class="size-4"></svg>
                     <span>Voltar ao Painel</span>
                 </a>
-                <h1 class="font-serif text-3xl sm:text-4xl text-gray-100">Pedidos dos Clientes</h1>
+                <h1 class="font-serif text-3xl sm:text-4xl text-gray-100">Gestão de Pedidos</h1>
+                <p class="text-xs text-gray-400 mt-1">Acompanhe fluxo de entrega, atualize status e gerencie códigos de rastreio dos Correios.</p>
             </div>
+
+            <!-- Botão Atualizar Dados -->
+            <button (click)="loadOrders()" [disabled]="loading()"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded bg-rg-surface border border-rg-rose/30 text-xs tracking-wider uppercase text-gray-300 hover:text-rg-rose hover:border-rg-rose transition-colors disabled:opacity-50">
+                <svg lucideRefreshCw [class.animate-spin]="loading()" class="size-3.5"></svg>
+                <span>Atualizar</span>
+            </button>
         </header>
 
-        <!-- Lista / Tabela de Pedidos -->
-        <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-6">
-            <div *ngIf="loading()" class="py-12 text-center text-rg-rose text-xs tracking-widest animate-pulse">
-                CARREGANDO PEDIDOS DO BANCO...
+        <!-- Filtros por Status (Abas com Contadores) -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+            <button *ngFor="let tab of statusTabs"
+                    (click)="selectStatus(tab.key)"
+                    [class.bg-rg-rose]="selectedStatus() === tab.key"
+                    [class.text-rg-dark]="selectedStatus() === tab.key"
+                    [class.font-semibold]="selectedStatus() === tab.key"
+                    [class.shadow-md]="selectedStatus() === tab.key"
+                    [class.shadow-rg-rose/20]="selectedStatus() === tab.key"
+                    [class.bg-rg-surface]="selectedStatus() !== tab.key"
+                    [class.text-gray-300]="selectedStatus() !== tab.key"
+                    [class.border]="selectedStatus() !== tab.key"
+                    [class.border-rg-rose/20]="selectedStatus() !== tab.key"
+                    [class.hover:border-rg-rose/50]="selectedStatus() !== tab.key"
+                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded text-xs whitespace-nowrap transition-all duration-200">
+                <span>{{ tab.label }}</span>
+                <span [class.bg-rg-dark]="selectedStatus() === tab.key"
+                      [class.text-rg-rose]="selectedStatus() === tab.key"
+                      [class.bg-rg-dark/60]="selectedStatus() !== tab.key"
+                      [class.text-gray-400]="selectedStatus() !== tab.key"
+                      class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold">
+                    {{ statusCounts()[tab.key] }}
+                </span>
+            </button>
+        </div>
+
+        <!-- Barra de Busca Rápida -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-rg-surface border border-rg-rose/20 p-4 rounded">
+            <div class="relative flex-1 max-w-lg">
+                <svg lucideSearch class="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-gray-400"></svg>
+                <input type="text"
+                       [ngModel]="searchQuery()"
+                       (ngModelChange)="searchQuery.set($event)"
+                       placeholder="Buscar por #ID, nome, e-mail ou rastreio..."
+                       class="w-full bg-rg-dark/80 border border-rg-rose/20 rounded pl-10 pr-9 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-rg-rose transition-colors" />
+                <button *ngIf="searchQuery()" (click)="clearSearch()"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                        title="Limpar busca">
+                    <svg lucideX class="size-3.5"></svg>
+                </button>
             </div>
 
-            <div *ngIf="!loading() && orders().length === 0" class="py-12 text-center text-gray-400 text-xs">
-                Nenhum pedido registrado no banco de dados até o momento.
+            <div class="text-xs text-gray-400 text-right">
+                Exibindo <span class="font-mono text-rg-rose font-bold">{{ filteredOrders().length }}</span> de <span class="font-mono text-gray-300">{{ orders().length }}</span> pedidos
             </div>
+        </div>
 
-            <div *ngIf="!loading() && orders().length > 0" class="space-y-6">
-                <div *ngFor="let order of orders()" class="border border-rg-rose/20 p-5 bg-rg-dark/60 rounded">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-rg-rose/10">
-                        <div>
-                            <span class="text-[10px] text-rg-rose font-mono">PEDIDO #{{ order.id }}</span>
-                            <h3 class="text-sm font-medium text-gray-100 mt-0.5">{{ order.customerName }}</h3>
-                            <p class="text-xs text-gray-400">{{ order.customerEmail }} • {{ order.customerPhone || 'Sem telefone' }}</p>
+        <!-- Estado de Carregamento -->
+        <div *ngIf="loading()" class="py-16 text-center text-rg-rose text-xs tracking-widest animate-pulse bg-rg-surface border border-rg-rose/20 rounded">
+            CARREGANDO PEDIDOS DO BANCO DE DADOS...
+        </div>
+
+        <!-- Estado Vazio -->
+        <div *ngIf="!loading() && filteredOrders().length === 0" class="py-16 text-center bg-rg-surface border border-rg-rose/20 rounded space-y-3">
+            <svg lucidePackage class="size-10 text-gray-500 mx-auto stroke-1"></svg>
+            <p class="text-sm text-gray-300">Nenhum pedido encontrado para o filtro aplicado.</p>
+            <button *ngIf="selectedStatus() !== 'ALL' || searchQuery()" (click)="selectedStatus.set('ALL'); clearSearch();"
+                    class="text-xs text-rg-rose hover:underline uppercase tracking-wider">
+                Limpar filtros e ver todos
+            </button>
+        </div>
+
+        <!-- Lista de Pedidos -->
+        <div *ngIf="!loading() && filteredOrders().length > 0" class="space-y-6">
+            <div *ngFor="let order of filteredOrders()" class="bg-rg-surface border border-rg-rose/20 hover:border-rg-rose/40 rounded-lg p-5 sm:p-6 space-y-5 transition-all">
+
+                <!-- Cabeçalho do Card: Pedido, Data, Valor e Status -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-rg-rose/10">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold text-rg-rose px-2 py-0.5 rounded bg-rg-dark/80 border border-rg-rose/20">
+                                PEDIDO #{{ order.id }}
+                            </span>
+                            <span *ngIf="order.createdAt" class="text-[11px] text-gray-400">
+                                {{ order.createdAt | date:'dd/MM/yyyy às HH:mm' }}
+                            </span>
                         </div>
-                        <div class="text-right">
-                            <span class="font-serif text-lg text-rg-rose block">R$ {{ order.totalAmount.toFixed(2) }}</span>
-                            <span [class.bg-emerald-500\/20]="order.status === 'PAID'"
-                                  [class.text-emerald-300]="order.status === 'PAID'"
-                                  [class.bg-amber-500\/20]="order.status === 'PENDING'"
-                                  [class.text-amber-300]="order.status === 'PENDING'"
-                                  class="text-[10px] uppercase tracking-wider px-2.5 py-0.5 border border-current rounded inline-block mt-1">
-                                {{ order.status === 'PAID' ? 'PAGO' : (order.status === 'PENDING' ? 'AGUARDANDO ENVIO' : order.status) }}
+                        <h3 class="text-base font-medium text-gray-100">{{ order.customerName }}</h3>
+                    </div>
+
+                    <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2">
+                        <span class="font-serif text-2xl text-rg-rose font-medium">R$ {{ order.totalAmount.toFixed(2) }}</span>
+                        
+                        <!-- Badges de Status estilizados -->
+                        <div>
+                            <span *ngIf="order.status === 'PENDING'"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                                <svg lucideClock class="size-3.5"></svg>
+                                <span>AGUARDANDO PAGAMENTO</span>
+                            </span>
+
+                            <span *ngIf="order.status === 'PAID'"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                                <svg lucideCircleCheck class="size-3.5"></svg>
+                                <span>PAGO / EM SEPARAÇÃO</span>
+                            </span>
+
+                            <span *ngIf="order.status === 'SHIPPED'"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium bg-sky-500/10 text-sky-300 border border-sky-500/30">
+                                <svg lucideTruck class="size-3.5"></svg>
+                                <span>ENVIADO</span>
+                            </span>
+
+                            <span *ngIf="order.status === 'DELIVERED'"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium bg-rg-rose/15 text-rg-rose border border-rg-rose/40">
+                                <svg lucidePackage class="size-3.5"></svg>
+                                <span>ENTREGUE</span>
+                            </span>
+
+                            <span *ngIf="order.status === 'CANCELED'"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30">
+                                <svg lucideCircleX class="size-3.5"></svg>
+                                <span>CANCELADO</span>
                             </span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Endereço e Itens -->
-                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-300">
-                        <div>
-                            <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Endereço de Entrega:</p>
-                            <p class="font-light leading-relaxed">{{ order.shippingAddress }}</p>
+                <!-- Corpo: 3 Colunas (Cliente, Endereço e Rastreio Correios) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs text-gray-300">
+                    
+                    <!-- Coluna 1: Dados do Cliente e Pagamento -->
+                    <div class="space-y-2 bg-rg-dark/50 p-4 rounded border border-rg-rose/10">
+                        <p class="text-[10px] uppercase tracking-wider text-rg-rose font-semibold">Cliente & Pagamento</p>
+                        <div class="space-y-1">
+                            <p class="text-gray-200"><span class="text-gray-400">E-mail:</span> {{ order.customerEmail }}</p>
+                            <p class="text-gray-200"><span class="text-gray-400">Telefone:</span> {{ order.customerPhone || 'Não informado' }}</p>
+                            <p class="text-gray-200">
+                                <span class="text-gray-400">Pagamento:</span> 
+                                <span class="font-mono text-rg-rose ml-1 uppercase">{{ order.paymentMethod === 'CREDIT_CARD' ? 'Cartão de Crédito' : order.paymentMethod }}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Coluna 2: Endereço de Entrega -->
+                    <div class="space-y-2 bg-rg-dark/50 p-4 rounded border border-rg-rose/10">
+                        <p class="text-[10px] uppercase tracking-wider text-rg-rose font-semibold">Endereço de Entrega</p>
+                        <p class="font-light leading-relaxed text-gray-200 whitespace-pre-line">{{ order.shippingAddress }}</p>
+                    </div>
+
+                    <!-- Coluna 3: Código de Rastreio dos Correios -->
+                    <div class="space-y-2 bg-rg-dark/50 p-4 rounded border border-rg-rose/10">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[10px] uppercase tracking-wider text-rg-rose font-semibold flex items-center gap-1.5">
+                                <svg lucideTruck class="size-3.5 text-rg-rose"></svg>
+                                <span>Rastreio Correios</span>
+                            </p>
+                            <button *ngIf="order.trackingCode && editingTrackingId() !== order.id"
+                                    (click)="startEditingTracking(order.id!, order.trackingCode)"
+                                    class="text-[10px] text-gray-400 hover:text-rg-rose transition-colors underline">
+                                Alterar
+                            </button>
                         </div>
 
-                        <div>
-                            <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Itens Adquiridos:</p>
-                            <ul class="space-y-1">
-                                <li *ngFor="let item of order.items" class="flex justify-between items-center text-gray-300 border-b border-rg-rose/5 py-1">
-                                    <span>{{ item.quantity }}x {{ item.productName }} <span *ngIf="item.variantSize || item.variantColor" class="text-gray-400 text-[10px]">({{ item.variantSize || item.variantColor }})</span></span>
-                                    <span class="font-mono text-rg-rose">R$ {{ (item.price * item.quantity).toFixed(2) }}</span>
-                                </li>
-                            </ul>
+                        <!-- Quando já possui rastreio e NÃO está editando -->
+                        <div *ngIf="order.trackingCode && editingTrackingId() !== order.id" class="space-y-2.5 pt-1">
+                            <div class="flex items-center justify-between bg-rg-dark border border-rg-rose/30 px-3 py-2 rounded">
+                                <span class="font-mono font-bold tracking-wider text-xs text-gray-100 select-all">{{ order.trackingCode }}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <!-- Botão Copiar -->
+                                    <button (click)="copyTrackingCode(order.id!, order.trackingCode)"
+                                            class="p-1 rounded text-gray-400 hover:text-rg-rose transition-colors relative"
+                                            title="Copiar código de rastreio">
+                                        <svg *ngIf="copiedOrderId() !== order.id" lucideCopy class="size-3.5"></svg>
+                                        <svg *ngIf="copiedOrderId() === order.id" lucideCheck class="size-3.5 text-emerald-400"></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Link Rastrear nos Correios -->
+                            <a [href]="getCorreiosUrl(order.trackingCode)"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1.5 text-[11px] text-rg-rose hover:underline font-medium">
+                                <span>Monitorar no site dos Correios</span>
+                                <svg lucideExternalLink class="size-3"></svg>
+                            </a>
+                        </div>
+
+                        <!-- Quando NÃO tem rastreio ou ESTÁ em modo de edição -->
+                        <div *ngIf="!order.trackingCode || editingTrackingId() === order.id" class="space-y-2 pt-1">
+                            <div class="flex items-center gap-2">
+                                <input #trackingInput
+                                       type="text"
+                                       [value]="getTrackingInputValue(order.id!, order.trackingCode)"
+                                       (input)="onTrackingInputChange(order.id!, trackingInput.value)"
+                                       placeholder="Ex: AA123456789BR"
+                                       maxlength="30"
+                                       class="flex-1 uppercase bg-rg-dark border border-rg-rose/30 rounded px-2.5 py-1.5 text-xs text-gray-100 placeholder-gray-500 font-mono focus:outline-none focus:border-rg-rose" />
+                                
+                                <button (click)="saveTrackingCode(order.id!, trackingInput.value)"
+                                        [disabled]="savingTrackingId() === order.id"
+                                        class="px-3 py-1.5 rounded bg-rg-rose text-rg-dark font-medium text-xs hover:opacity-90 transition-opacity disabled:opacity-50 whitespace-nowrap">
+                                    {{ savingTrackingId() === order.id ? 'Salvando...' : 'Salvar' }}
+                                </button>
+                            </div>
+
+                            <button *ngIf="editingTrackingId() === order.id"
+                                    (click)="cancelEditingTracking(order.id!)"
+                                    class="text-[10px] text-gray-400 hover:text-white transition-colors">
+                                Cancelar edição
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Itens Adquiridos -->
+                <div class="space-y-2 pt-2 border-t border-rg-rose/10">
+                    <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Itens do Pedido ({{ order.items.length }})</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div *ngFor="let item of order.items" class="flex items-center gap-3 p-2.5 rounded bg-rg-dark/40 border border-rg-rose/10">
+                            <!-- Foto miniatura ou ícone -->
+                            <div class="size-12 rounded bg-rg-dark flex items-center justify-center overflow-hidden shrink-0 border border-rg-rose/10">
+                                <img *ngIf="item.productImage" [src]="item.productImage" [alt]="item.productName" class="w-full h-full object-cover" />
+                                <svg *ngIf="!item.productImage" lucidePackage class="size-5 text-gray-500"></svg>
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs text-gray-100 font-medium truncate">{{ item.productName }}</h4>
+                                <div class="flex items-center gap-2 text-[10px] text-gray-400 mt-0.5">
+                                    <span *ngIf="item.variantSize" class="bg-rg-dark px-1.5 py-0.5 rounded border border-rg-rose/10 text-gray-300">Tam: {{ item.variantSize }}</span>
+                                    <span *ngIf="item.variantColor" class="bg-rg-dark px-1.5 py-0.5 rounded border border-rg-rose/10 text-gray-300">Cor: {{ item.variantColor }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-[11px] mt-1">
+                                    <span class="text-gray-400 font-mono">{{ item.quantity }}x R$ {{ item.price.toFixed(2) }}</span>
+                                    <span class="font-mono text-rg-rose font-medium">R$ {{ (item.price * item.quantity).toFixed(2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rodapé do Card: Mudança Rápida de Status e Seletor Manual -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-4 border-t border-rg-rose/10 bg-rg-dark/30 -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 p-4 rounded-b-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400">Alterar Status:</span>
+                        <select [ngModel]="order.status"
+                                (ngModelChange)="updateStatus(order.id!, $event)"
+                                [disabled]="updatingOrderId() === order.id"
+                                class="bg-rg-dark border border-rg-rose/30 text-xs text-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:border-rg-rose transition-colors disabled:opacity-50">
+                            <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+                        </select>
+                        <span *ngIf="updatingOrderId() === order.id" class="text-xs text-rg-rose animate-pulse">Atualizando...</span>
+                    </div>
+
+                    <!-- Botão de Avanço Rápido de Fluxo -->
+                    <div *ngIf="getNextStatus(order.status) as nextStep" class="w-full sm:w-auto">
+                        <button (click)="updateStatus(order.id!, nextStep.status)"
+                                [disabled]="updatingOrderId() === order.id"
+                                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded bg-rg-rose/15 border border-rg-rose/40 text-rg-rose hover:bg-rg-rose hover:text-rg-dark font-medium text-xs tracking-wider transition-all disabled:opacity-50">
+                            <svg *ngIf="nextStep.status === 'PAID'" lucideCircleCheck class="size-3.5"></svg>
+                            <svg *ngIf="nextStep.status === 'SHIPPED'" lucideTruck class="size-3.5"></svg>
+                            <svg *ngIf="nextStep.status === 'DELIVERED'" lucidePackage class="size-3.5"></svg>
+                            <span>{{ nextStep.label }}</span>
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
 

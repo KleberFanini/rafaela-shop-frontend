@@ -26,4 +26,8 @@ export class OrderService {
   updateOrderStatus(orderId: number, status: string): Observable<Order> {
     return this.http.patch<Order>(`${this.apiUrl}/${orderId}/status?status=${status}`, {});
   }
+
+  updateTrackingCode(orderId: number, trackingCode: string): Observable<Order> {
+    return this.http.patch<Order>(`${this.apiUrl}/${orderId}/tracking?trackingCode=${encodeURIComponent(trackingCode)}`, {});
+  }
 }

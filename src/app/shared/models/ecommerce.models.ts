@@ -59,6 +59,7 @@ export interface Order {
     totalAmount: number;
     paymentMethod: string;
     status: string;
+    trackingCode?: string;
     createdAt?: string;
     items: OrderItem[];
 }

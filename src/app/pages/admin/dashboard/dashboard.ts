@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import {
   LucidePlus,
   LucideClipboardList,
@@ -11,18 +12,26 @@ import {
   LucideTrendingUp,
   LucideTrendingDown,
   LucideBoxes,
-  LucidePencil
+  LucidePencil,
+  LucideTrash2,
+  LucidePower,
+  LucideRotateCcw,
+  LucideSearch,
+  LucideX
 } from '@lucide/angular';
 import { ProductService } from '../../../core/services/product';
 import { AuthService } from '../../../core/services/auth';
 import { OrderService } from '../../../core/services/order';
 import { Product } from '../../../shared/models/ecommerce.models';
 
+export type ProductFilterType = 'ALL' | 'ACTIVE' | 'INACTIVE' | 'LOW';
+
 @Component({
   selector: 'app-dashboard',
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
     LucidePlus,
     LucideClipboardList,
     LucideDollarSign,
@@ -32,7 +41,12 @@ import { Product } from '../../../shared/models/ecommerce.models';
     LucideTrendingUp,
     LucideTrendingDown,
     LucideBoxes,
-    LucidePencil
+    LucidePencil,
+    LucideTrash2,
+    LucidePower,
+    LucideRotateCcw,
+    LucideSearch,
+    LucideX
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -45,6 +59,11 @@ export class Dashboard implements OnInit {
 
   products = signal<Product[]>([]);
   loading = signal(true);
+  actionLoadingId = signal<number | null>(null);
+
+  // Modal de confirmação de exclusão lógica
+  productToDelete = signal<Product | null>(null);
+  deleting = signal(false);
 
   // Métricas do painel reais vindas do banco de dados
   totalRevenue = signal(0);
@@ -52,20 +71,52 @@ export class Dashboard implements OnInit {
   totalOrders = signal(0);
   pendingOrders = signal(0);
 
-  // Filtro da Tabela de Estoque: 'ALL' (Todos os Produtos) ou 'LOW' (Estoque Baixo)
-  stockFilter = signal<'ALL' | 'LOW'>('ALL');
+  // Filtro da Tabela: 'ALL' | 'ACTIVE' | 'INACTIVE' | 'LOW'
+  statusFilter = signal<ProductFilterType>('ALL');
+  searchQuery = signal<string>('');
 
-  // Produtos filtrados de acordo com a seleção
-  displayedProducts = computed(() => {
+  // Contadores dinâmicos
+  productCounts = computed(() => {
     const all = this.products();
-    if (this.stockFilter() === 'LOW') {
-      return all.filter(p => p.variants && p.variants.some(v => v.stock <= 3));
-    }
-    return all;
+    return {
+      ALL: all.length,
+      ACTIVE: all.filter(p => p.active !== false).length,
+      INACTIVE: all.filter(p => p.active === false).length,
+      LOW: all.filter(p => p.variants && p.variants.some(v => v.stock != null && v.stock <= 3)).length
+    };
+  });
+
+  activeProductsCount = computed(() => {
+    return this.products().filter(p => p.active !== false).length;
   });
 
   lowStockItems = computed(() => {
-    return this.products().filter(p => p.variants && p.variants.some(v => v.stock <= 3));
+    return this.products().filter(p => p.variants && p.variants.some(v => v.stock != null && v.stock <= 3));
+  });
+
+  // Produtos filtrados de acordo com a seleção e busca
+  displayedProducts = computed(() => {
+    let list = this.products();
+    const filter = this.statusFilter();
+
+    if (filter === 'ACTIVE') {
+      list = list.filter(p => p.active !== false);
+    } else if (filter === 'INACTIVE') {
+      list = list.filter(p => p.active === false);
+    } else if (filter === 'LOW') {
+      list = list.filter(p => p.variants && p.variants.some(v => v.stock != null && v.stock <= 3));
+    }
+
+    const query = this.searchQuery().trim().toLowerCase();
+    if (query) {
+      list = list.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.id?.toString().includes(query) ||
+        p.category?.name.toLowerCase().includes(query)
+      );
+    }
+
+    return list;
   });
 
   ngOnInit(): void {
@@ -97,7 +148,8 @@ export class Dashboard implements OnInit {
 
   loadProducts(): void {
     this.loading.set(true);
-    this.productService.getProducts().subscribe({
+    // includeInactive = true para trazer todos os produtos ao painel admin
+    this.productService.getProducts(undefined, true).subscribe({
       next: (prods) => {
         this.products.set(prods);
         this.loading.set(false);
@@ -106,8 +158,61 @@ export class Dashboard implements OnInit {
     });
   }
 
-  setStockFilter(filter: 'ALL' | 'LOW'): void {
-    this.stockFilter.set(filter);
+  setStatusFilter(filter: ProductFilterType): void {
+    this.statusFilter.set(filter);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  toggleActive(product: Product): void {
+    if (!product.id) return;
+    this.actionLoadingId.set(product.id);
+
+    this.productService.toggleProductActive(product.id).subscribe({
+      next: (updated) => {
+        this.products.update(list =>
+          list.map(p => p.id === updated.id ? { ...p, active: updated.active } : p)
+        );
+        this.actionLoadingId.set(null);
+        this.loadStats();
+      },
+      error: (err) => {
+        console.error('Erro ao alternar status do produto:', err);
+        this.actionLoadingId.set(null);
+      }
+    });
+  }
+
+  confirmDelete(product: Product): void {
+    this.productToDelete.set(product);
+  }
+
+  cancelDelete(): void {
+    this.productToDelete.set(null);
+  }
+
+  executeDelete(): void {
+    const prod = this.productToDelete();
+    if (!prod || !prod.id) return;
+
+    this.deleting.set(true);
+    this.productService.deleteProduct(prod.id).subscribe({
+      next: () => {
+        // Exclusão lógica: atualiza o status para desativado localmente
+        this.products.update(list =>
+          list.map(p => p.id === prod.id ? { ...p, active: false } : p)
+        );
+        this.deleting.set(false);
+        this.productToDelete.set(null);
+        this.loadStats();
+      },
+      error: (err) => {
+        console.error('Erro ao desativar logicamente o produto:', err);
+        this.deleting.set(false);
+      }
+    });
   }
 
   getTotalStock(product: Product): number {

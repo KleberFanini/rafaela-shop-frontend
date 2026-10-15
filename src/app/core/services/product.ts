@@ -16,10 +16,13 @@ export class ProductService {
     return this.http.get<Category[]>(`${this.apiUrl}/categories`);
   }
 
-  getProducts(categoryId?: number): Observable<Product[]> {
+  getProducts(categoryId?: number, includeInactive: boolean = false): Observable<Product[]> {
     let params = new HttpParams();
     if (categoryId) {
       params = params.set('categoryId', categoryId.toString());
+    }
+    if (includeInactive) {
+      params = params.set('includeInactive', 'true');
     }
     return this.http.get<Product[]>(`${this.apiUrl}/products`, { params });
   }
@@ -34,6 +37,14 @@ export class ProductService {
 
   updateProduct(id: number, product: Partial<Product>): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/products/${id}`, product);
+  }
+
+  toggleProductActive(id: number): Observable<Product> {
+    return this.http.patch<Product>(`${this.apiUrl}/products/${id}/toggle-active`, {});
+  }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/products/${id}`);
   }
 
   uploadImage(file: File): Observable<{ url: string }> {

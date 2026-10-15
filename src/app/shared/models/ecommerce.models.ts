@@ -21,6 +21,7 @@ export interface Product {
     gender?: 'FEMININO' | 'MASCULINO' | 'UNISSEX' | string;
     category: Category;
     variants: ProductVariant[];
+    active?: boolean;
     createdAt?: string;
 }
 

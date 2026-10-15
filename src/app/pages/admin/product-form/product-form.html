@@ -36,6 +36,21 @@
                         class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 outline-none focus:border-rg-rose" />
                 </div>
 
+                <!-- Visibilidade do Produto (Ativo / Desativado) -->
+                <div class="flex items-center justify-between p-3.5 bg-rg-dark/70 border border-rg-rose/20 rounded">
+                    <div>
+                        <span class="text-xs font-medium text-gray-200 block">Status no Catálogo</span>
+                        <span class="text-[11px] text-gray-400">Quando ativo, o produto aparece na vitrine da loja e fica liberado para compra.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="active" [(ngModel)]="productData.active" class="sr-only peer" />
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        <span class="ml-3 text-xs font-mono font-bold" [class.text-emerald-400]="productData.active" [class.text-gray-400]="!productData.active">
+                            {{ productData.active ? 'ATIVO' : 'DESATIVADO' }}
+                        </span>
+                    </label>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-[11px] uppercase tracking-wider text-gray-400 mb-1">Categoria</label>

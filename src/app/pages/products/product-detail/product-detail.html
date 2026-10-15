@@ -43,6 +43,15 @@
                     {{ product()?.name }}
                 </h1>
 
+                <!-- Alerta de Produto Desativado -->
+                <div *ngIf="product()?.active === false" class="mt-4 p-4 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3">
+                    <svg lucideAlertTriangle class="size-5 shrink-0 text-amber-400"></svg>
+                    <div>
+                        <p class="font-semibold text-amber-200">Este produto está temporariamente indisponível no catálogo.</p>
+                        <p class="text-[11px] text-amber-300/80 mt-0.5">O item foi pausado pelo lojista e novas compras estão suspensas no momento.</p>
+                    </div>
+                </div>
+
                 <!-- Preço e Parcelamento -->
                 <div class="mt-4 pb-6 border-b border-rg-rose/20">
                     <p class="font-serif text-2xl sm:text-3xl text-rg-rose">
@@ -126,10 +135,10 @@
                     </div>
 
                     <!-- Botão de Compra -->
-                    <button type="button" (click)="addToCart()" [disabled]="selectedVariant()?.stock === 0"
+                    <button type="button" (click)="addToCart()" [disabled]="selectedVariant()?.stock === 0 || product()?.active === false"
                         class="flex-1 h-12 px-8 bg-rg-rose text-rg-dark border border-rg-rose font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                         <svg lucideShoppingBag class="size-4"></svg>
-                        <span>{{ selectedVariant()?.stock === 0 ? 'Indisponível' : 'Adicionar à Sacola' }}</span>
+                        <span>{{ product()?.active === false ? 'Produto Indisponível' : (selectedVariant()?.stock === 0 ? 'Indisponível' : 'Adicionar à Sacola') }}</span>
                     </button>
                 </div>
 

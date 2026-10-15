@@ -55,7 +55,7 @@
                     <p class="text-[11px] uppercase tracking-wider text-gray-400">Catálogo Ativo</p>
                     <svg lucidePackage class="size-5 text-rg-rose"></svg>
                 </div>
-                <p class="font-serif text-3xl text-gray-100 mt-1">{{ products().length }} produtos</p>
+                <p class="font-serif text-3xl text-gray-100 mt-1">{{ activeProductsCount() }} produtos</p>
                 <span class="text-[10px] text-amber-400 mt-2 flex items-center gap-1">
                     <svg lucideAlertTriangle class="size-3"></svg>
                     {{ lowStockItems().length }} com estoque crítico
@@ -63,44 +63,102 @@
             </div>
         </div>
 
-        <!-- Tabela / Gestão de Estoque dos Produtos -->
+        <!-- Tabela / Gestão de Estoque e Status dos Produtos -->
         <div class="bg-rg-surface border border-rg-rose/20 p-6 space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-rg-rose/10 pb-4">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-rg-rose/10 pb-4">
                 <div class="flex items-center gap-2">
                     <svg lucideBoxes class="size-5 text-rg-rose"></svg>
-                    <h2 class="font-serif text-xl text-gray-100">Estoque de Produtos do Catálogo</h2>
+                    <div>
+                        <h2 class="font-serif text-xl text-gray-100">Catálogo de Produtos & Estoque</h2>
+                        <p class="text-xs text-gray-400">Gerencie visibilidade, preços e estoque com suporte a exclusão lógica.</p>
+                    </div>
                 </div>
 
-                <!-- Filtros de Aba de Estoque -->
-                <div class="flex border border-rg-rose/20 rounded p-1 bg-rg-dark text-xs">
-                    <button (click)="setStockFilter('ALL')"
-                        [class.bg-rg-rose]="stockFilter() === 'ALL'"
-                        [class.text-rg-dark]="stockFilter() === 'ALL'"
-                        [class.font-semibold]="stockFilter() === 'ALL'"
-                        [class.text-gray-400]="stockFilter() !== 'ALL'"
-                        class="px-4 py-1.5 transition-all">
-                        Todos os Produtos ({{ products().length }})
+                <!-- Filtros por Abas de Status -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+                    <button (click)="setStatusFilter('ALL')"
+                        [class.bg-rg-rose]="statusFilter() === 'ALL'"
+                        [class.text-rg-dark]="statusFilter() === 'ALL'"
+                        [class.font-semibold]="statusFilter() === 'ALL'"
+                        [class.bg-rg-dark]="statusFilter() !== 'ALL'"
+                        [class.text-gray-400]="statusFilter() !== 'ALL'"
+                        [class.border-rg-rose/20]="statusFilter() !== 'ALL'"
+                        class="px-3 py-1.5 rounded text-xs transition-all border inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span>Todos</span>
+                        <span class="font-mono text-[10px] px-1.5 py-0.2 rounded bg-black/30">{{ productCounts().ALL }}</span>
                     </button>
-                    <button (click)="setStockFilter('LOW')"
-                        [class.bg-rg-rose]="stockFilter() === 'LOW'"
-                        [class.text-rg-dark]="stockFilter() === 'LOW'"
-                        [class.font-semibold]="stockFilter() === 'LOW'"
-                        [class.text-gray-400]="stockFilter() !== 'LOW'"
-                        class="px-4 py-1.5 transition-all flex items-center gap-1.5">
+
+                    <button (click)="setStatusFilter('ACTIVE')"
+                        [class.bg-rg-rose]="statusFilter() === 'ACTIVE'"
+                        [class.text-rg-dark]="statusFilter() === 'ACTIVE'"
+                        [class.font-semibold]="statusFilter() === 'ACTIVE'"
+                        [class.bg-rg-dark]="statusFilter() !== 'ACTIVE'"
+                        [class.text-gray-400]="statusFilter() !== 'ACTIVE'"
+                        [class.border-rg-rose/20]="statusFilter() !== 'ACTIVE'"
+                        class="px-3 py-1.5 rounded text-xs transition-all border inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span class="size-2 rounded-full bg-emerald-400 inline-block"></span>
+                        <span>Ativos</span>
+                        <span class="font-mono text-[10px] px-1.5 py-0.2 rounded bg-black/30">{{ productCounts().ACTIVE }}</span>
+                    </button>
+
+                    <button (click)="setStatusFilter('INACTIVE')"
+                        [class.bg-rg-rose]="statusFilter() === 'INACTIVE'"
+                        [class.text-rg-dark]="statusFilter() === 'INACTIVE'"
+                        [class.font-semibold]="statusFilter() === 'INACTIVE'"
+                        [class.bg-rg-dark]="statusFilter() !== 'INACTIVE'"
+                        [class.text-gray-400]="statusFilter() !== 'INACTIVE'"
+                        [class.border-rg-rose/20]="statusFilter() !== 'INACTIVE'"
+                        class="px-3 py-1.5 rounded text-xs transition-all border inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span class="size-2 rounded-full bg-gray-400 inline-block"></span>
+                        <span>Desativados</span>
+                        <span class="font-mono text-[10px] px-1.5 py-0.2 rounded bg-black/30">{{ productCounts().INACTIVE }}</span>
+                    </button>
+
+                    <button (click)="setStatusFilter('LOW')"
+                        [class.bg-rg-rose]="statusFilter() === 'LOW'"
+                        [class.text-rg-dark]="statusFilter() === 'LOW'"
+                        [class.font-semibold]="statusFilter() === 'LOW'"
+                        [class.bg-rg-dark]="statusFilter() !== 'LOW'"
+                        [class.text-gray-400]="statusFilter() !== 'LOW'"
+                        [class.border-rg-rose/20]="statusFilter() !== 'LOW'"
+                        class="px-3 py-1.5 rounded text-xs transition-all border inline-flex items-center gap-1.5 whitespace-nowrap">
+                        <span class="size-2 rounded-full bg-amber-400 inline-block"></span>
                         <span>Estoque Baixo</span>
-                        <span class="bg-amber-500/20 text-amber-300 text-[10px] px-1.5 py-0.5 rounded border border-amber-500/40 font-mono">
-                            {{ lowStockItems().length }}
-                        </span>
+                        <span class="font-mono text-[10px] px-1.5 py-0.2 rounded bg-black/30 text-amber-300">{{ productCounts().LOW }}</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Campo de Busca Rápida -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-rg-dark/50 p-3 rounded border border-rg-rose/10">
+                <div class="relative flex-1 max-w-md">
+                    <svg lucideSearch class="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-gray-400"></svg>
+                    <input type="text"
+                           [ngModel]="searchQuery()"
+                           (ngModelChange)="searchQuery.set($event)"
+                           placeholder="Buscar por nome, #ID ou categoria..."
+                           class="w-full bg-rg-dark border border-rg-rose/20 rounded pl-9 pr-8 py-1.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-rg-rose" />
+                    <button *ngIf="searchQuery()" (click)="clearSearch()"
+                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                        <svg lucideX class="size-3.5"></svg>
+                    </button>
+                </div>
+                <div class="text-[11px] text-gray-400 text-right">
+                    Exibindo <span class="text-rg-rose font-mono font-bold">{{ displayedProducts().length }}</span> de <span class="font-mono">{{ products().length }}</span> produtos
                 </div>
             </div>
 
             <div *ngIf="loading()" class="py-12 text-center text-rg-rose text-xs tracking-widest animate-pulse">
-                CARREGANDO ESTOQUE DOS PRODUTOS...
+                CARREGANDO PRODUTOS DO BANCO DE DADOS...
             </div>
 
-            <div *ngIf="!loading() && displayedProducts().length === 0" class="py-12 text-center text-gray-400 text-xs">
-                Nenhum produto encontrado para o filtro selecionado.
+            <div *ngIf="!loading() && displayedProducts().length === 0" class="py-12 text-center text-gray-400 text-xs space-y-2">
+                <p>Nenhum produto encontrado para o filtro selecionado.</p>
+                <button *ngIf="statusFilter() !== 'ALL' || searchQuery()"
+                        (click)="setStatusFilter('ALL'); clearSearch()"
+                        class="text-rg-rose hover:underline text-[11px] uppercase tracking-wider">
+                    Limpar filtros e ver todos
+                </button>
             </div>
 
             <div *ngIf="!loading() && displayedProducts().length > 0" class="overflow-x-auto">
@@ -110,19 +168,40 @@
                             <th class="py-3 px-4">Produto</th>
                             <th class="py-3 px-4">Categoria</th>
                             <th class="py-3 px-4">Preço</th>
+                            <th class="py-3 px-4">Status Loja</th>
                             <th class="py-3 px-4">Estoque Total</th>
                             <th class="py-3 px-4">Variações / Opções</th>
-                            <th class="py-3 px-4 text-right">Ação</th>
+                            <th class="py-3 px-4 text-right">Ações</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-rg-rose/10">
-                        <tr *ngFor="let prod of displayedProducts()" class="hover:bg-rg-dark/40 transition-colors">
+                        <tr *ngFor="let prod of displayedProducts()"
+                            [class.opacity-60]="prod.active === false"
+                            class="hover:bg-rg-dark/40 transition-colors">
                             <td class="py-4 px-4 font-medium text-gray-100 flex items-center gap-3">
-                                <img [src]="prod.imageUrl || '/performance-collection.jpg'" [alt]="prod.name" class="w-10 h-12 object-cover border border-rg-rose/20 rounded-sm" />
-                                <span>{{ prod.name }}</span>
+                                <img [src]="prod.imageUrl || '/performance-collection.jpg'" [alt]="prod.name" class="w-10 h-12 object-cover border border-rg-rose/20 rounded-sm shrink-0" />
+                                <div>
+                                    <span class="block font-medium">{{ prod.name }}</span>
+                                    <span class="text-[10px] font-mono text-gray-400">#{{ prod.id }} • {{ prod.gender || 'FEMININO' }}</span>
+                                </div>
                             </td>
                             <td class="py-4 px-4 text-gray-400">{{ prod.category.name }}</td>
                             <td class="py-4 px-4 font-serif text-rg-rose font-medium">R$ {{ prod.price.toFixed(2) }}</td>
+                            
+                            <!-- Coluna Status Ativo / Desativado -->
+                            <td class="py-4 px-4">
+                                <span *ngIf="prod.active !== false"
+                                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                                    <span class="size-1.5 rounded-full bg-emerald-400"></span>
+                                    ATIVO
+                                </span>
+                                <span *ngIf="prod.active === false"
+                                      class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-500/15 text-gray-400 border border-gray-500/30">
+                                    <span class="size-1.5 rounded-full bg-gray-400"></span>
+                                    DESATIVADO
+                                </span>
+                            </td>
+
                             <td class="py-4 px-4 font-mono font-semibold">
                                 <span [class.text-amber-400]="getTotalStock(prod) <= 3" [class.text-emerald-400]="getTotalStock(prod) > 3">
                                     {{ getTotalStock(prod) }} un.
@@ -145,22 +224,84 @@
                                 </div>
                             </td>
                             <td class="py-4 px-4 text-right">
-                                <div class="flex items-center justify-end gap-2.5">
+                                <div class="flex items-center justify-end gap-2">
+                                    
+                                    <!-- Botão Alternar Status (Ativar / Desativar) -->
+                                    <button (click)="toggleActive(prod)"
+                                            [disabled]="actionLoadingId() === prod.id"
+                                            [title]="prod.active !== false ? 'Desativar do catálogo' : 'Reativar no catálogo'"
+                                            [class.text-amber-400]="prod.active !== false"
+                                            [class.border-amber-500/30]="prod.active !== false"
+                                            [class.text-emerald-400]="prod.active === false"
+                                            [class.border-emerald-500/30]="prod.active === false"
+                                            class="inline-flex items-center gap-1 px-2 py-1 rounded bg-rg-dark border text-[11px] transition-all hover:opacity-80 disabled:opacity-40">
+                                        <svg *ngIf="prod.active !== false" lucidePower class="size-3"></svg>
+                                        <svg *ngIf="prod.active === false" lucideRotateCcw class="size-3"></svg>
+                                        <span>{{ prod.active !== false ? 'Desativar' : 'Reativar' }}</span>
+                                    </button>
+
+                                    <!-- Botão Editar -->
                                     <a [routerLink]="['/admin/produtos/editar', prod.id]"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1 bg-rg-rose/10 border border-rg-rose/40 text-rg-rose hover:bg-rg-rose hover:text-rg-dark transition-all text-[11px] uppercase tracking-wider font-semibold">
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 bg-rg-rose/10 border border-rg-rose/40 text-rg-rose hover:bg-rg-rose hover:text-rg-dark transition-all text-[11px] uppercase tracking-wider font-semibold rounded">
                                         <svg lucidePencil class="size-3.5"></svg>
                                         <span>Editar</span>
                                     </a>
+
+                                    <!-- Botão Ver na Loja -->
                                     <a [routerLink]="['/produtos', prod.id]"
-                                        class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-100 transition-colors text-[11px] uppercase tracking-wider">
+                                        class="inline-flex items-center gap-1 text-gray-400 hover:text-gray-100 transition-colors text-[11px] uppercase tracking-wider px-1.5 py-1">
                                         <svg lucideEye class="size-3.5"></svg>
-                                        <span>Ver</span>
                                     </a>
+
+                                    <!-- Botão Excluir (Soft Delete) -->
+                                    <button *ngIf="prod.active !== false"
+                                            (click)="confirmDelete(prod)"
+                                            title="Excluir logicamente do catálogo"
+                                            class="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
+                                        <svg lucideTrash2 class="size-3.5"></svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação de Exclusão Lógica -->
+        <div *ngIf="productToDelete()"
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div class="bg-rg-surface border border-rg-rose/30 rounded-lg max-w-md w-full p-6 space-y-5 shadow-2xl">
+                <div class="flex items-center gap-3 text-amber-400">
+                    <div class="size-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <svg lucideAlertTriangle class="size-5"></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-serif text-lg text-gray-100">Desativar Produto do Catálogo?</h3>
+                        <p class="text-xs text-gray-400">Exclusão lógica com segurança de integridade</p>
+                    </div>
+                </div>
+
+                <div class="text-xs text-gray-300 space-y-2 bg-rg-dark/50 p-3.5 rounded border border-rg-rose/10">
+                    <p>Você está prestes a desativar <strong class="text-rg-rose">{{ productToDelete()?.name }}</strong>.</p>
+                    <p class="text-gray-400 text-[11px]">
+                        O produto deixará de ser exibido na vitrine e buscas para os clientes. 
+                        <strong>O histórico de pedidos e vendas anteriores será totalmente preservado</strong> e você poderá reativá-lo a qualquer momento.
+                    </p>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button (click)="cancelDelete()"
+                            [disabled]="deleting()"
+                            class="px-4 py-2 text-xs text-gray-400 hover:text-white uppercase tracking-wider transition-colors disabled:opacity-50">
+                        Cancelar
+                    </button>
+                    <button (click)="executeDelete()"
+                            [disabled]="deleting()"
+                            class="px-5 py-2 text-xs font-semibold uppercase tracking-wider rounded bg-red-600/20 text-red-300 border border-red-500/40 hover:bg-red-600 hover:text-white transition-all disabled:opacity-50">
+                        {{ deleting() ? 'Desativando...' : 'Sim, Desativar' }}
+                    </button>
+                </div>
             </div>
         </div>
 

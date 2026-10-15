@@ -154,10 +154,19 @@
                         </div>
                     </div>
 
-                    <!-- Coluna 2: Endereço de Entrega -->
+                    <!-- Coluna 2: Endereço de Entrega & Frete -->
                     <div class="space-y-2 bg-rg-dark/50 p-4 rounded border border-rg-rose/10">
-                        <p class="text-[10px] uppercase tracking-wider text-rg-rose font-semibold">Endereço de Entrega</p>
+                        <p class="text-[10px] uppercase tracking-wider text-rg-rose font-semibold">Endereço & Frete</p>
                         <p class="font-light leading-relaxed text-gray-200 whitespace-pre-line">{{ order.shippingAddress }}</p>
+                        <div *ngIf="order.shippingMethod" class="pt-2 border-t border-rg-rose/10 flex items-center justify-between text-[11px]">
+                            <span class="text-gray-400">Envio:</span>
+                            <span class="text-gray-200 font-medium">{{ order.shippingMethod }}</span>
+                        </div>
+                        <div *ngIf="order.shippingCost != null" class="flex items-center justify-between text-[11px]">
+                            <span class="text-gray-400">Valor Frete:</span>
+                            <span *ngIf="order.shippingCost === 0" class="text-emerald-400 font-semibold">GRÁTIS</span>
+                            <span *ngIf="order.shippingCost > 0" class="text-rg-rose font-medium">R$ {{ order.shippingCost.toFixed(2) }}</span>
+                        </div>
                     </div>
 
                     <!-- Coluna 3: Código de Rastreio dos Correios -->

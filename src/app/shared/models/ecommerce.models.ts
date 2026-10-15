@@ -60,7 +60,30 @@ export interface Order {
     totalAmount: number;
     paymentMethod: string;
     status: string;
+    shippingCost?: number;
+    shippingMethod?: string;
     trackingCode?: string;
     createdAt?: string;
     items: OrderItem[];
+}
+
+export interface ShippingOption {
+    id: string;
+    name: string;
+    carrier: string;
+    price: number;
+    originalPrice: number;
+    deliveryDays: number;
+    deliveryRange: string;
+    free: boolean;
+    description: string;
+}
+
+export interface ShippingResponse {
+    postalCode: string;
+    street: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    options: ShippingOption[];
 }

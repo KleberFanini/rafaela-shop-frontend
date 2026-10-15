@@ -1,13 +1,33 @@
 <section class="min-h-screen bg-rg-dark text-gray-200 pt-28 pb-20 px-5 sm:px-8 lg:px-12">
     <div class="max-w-[1200px] mx-auto">
 
-        <header class="border-b border-rg-rose/20 pb-6 mb-10">
+        <header class="border-b border-rg-rose/20 pb-6 mb-8">
             <h1 class="font-serif text-3xl sm:text-4xl text-gray-100">Sua Sacola de Compras</h1>
             <p class="text-xs uppercase tracking-widest text-rg-rose mt-1">
-                {{ cartService.totalItemsCount() }} {{ cartService.totalItemsCount() === 1 ? 'item selecionado' : 'itens
-                selecionados' }}
+                {{ cartService.totalItemsCount() }} {{ cartService.totalItemsCount() === 1 ? 'item selecionado' : 'itens selecionados' }}
             </p>
         </header>
+
+        <!-- Barra de Incentivo: Frete Grátis acima de R$ 299 -->
+        <div *ngIf="cartService.items().length > 0" class="mb-8 p-4 bg-rg-surface border border-rg-rose/20 rounded-sm">
+            <div class="flex items-center justify-between text-xs mb-2">
+                <span class="inline-flex items-center gap-2">
+                    <svg lucideTruck class="size-4 text-rg-rose"></svg>
+                    <span *ngIf="!hasFreeShipping()" class="text-gray-300">
+                        Adicione mais <strong class="text-rg-rose font-semibold">R$ {{ amountNeededForFreeShipping().toFixed(2) }}</strong> para ganhar <strong class="text-emerald-400 uppercase">Frete Grátis</strong>!
+                    </span>
+                    <span *ngIf="hasFreeShipping()" class="text-emerald-400 font-semibold inline-flex items-center gap-1.5">
+                        <svg lucideSparkles class="size-3.5"></svg>
+                        Parabéns! Sua compra atingiu os requisitos para Frete Grátis no envio econômico!
+                    </span>
+                </span>
+                <span class="font-mono text-[11px] text-gray-400">{{ freeShippingProgress() }}%</span>
+            </div>
+            <div class="w-full bg-rg-dark h-2 rounded-full overflow-hidden border border-rg-rose/10">
+                <div class="h-full bg-gradient-to-r from-rg-rose to-emerald-400 transition-all duration-500 rounded-full"
+                     [style.width.%]="freeShippingProgress()"></div>
+            </div>
+        </div>
 
         <!-- Carrinho Vazio -->
         <div *ngIf="cartService.items().length === 0"
@@ -30,7 +50,7 @@
 
                     <div class="flex items-center gap-4 w-full sm:w-auto">
                         <img [src]="getImageUrl(item.product.imageUrl, item.product.category.name)" (error)="onImageError($event, item.product.category.name)"
-                            [alt]="item.product.name" class="w-20 h-24 object-cover border border-rg-rose/20" />
+                            [alt]="item.product.name" class="w-20 h-24 object-cover border border-rg-rose/20 shrink-0" />
                         <div>
                             <span class="text-[9px] uppercase tracking-widest text-rg-rose">{{
                                 item.product.category.name }}</span>
@@ -84,35 +104,132 @@
                 </div>
             </div>
 
-            <!-- Resumo do Pedido -->
-            <aside class="p-6 bg-rg-surface border border-rg-rose/30">
-                <h2 class="font-serif text-lg text-gray-100 border-b border-rg-rose/20 pb-3">Resumo da Compra</h2>
+            <!-- Coluna Direita: Resumo do Pedido e Cálculo de Frete -->
+            <aside class="space-y-6">
 
-                <div class="py-4 space-y-3 text-xs text-gray-300">
-                    <div class="flex justify-between">
-                        <span>Subtotal</span>
-                        <span class="font-medium text-gray-100">R$ {{ cartService.subtotal().toFixed(2) }}</span>
+                <!-- Bloco de Cálculo de Frete por CEP -->
+                <div class="p-5 bg-rg-surface border border-rg-rose/30">
+                    <div class="flex items-center gap-2 border-b border-rg-rose/20 pb-3 mb-4">
+                        <svg lucideTruck class="size-4 text-rg-rose"></svg>
+                        <h2 class="font-serif text-base text-gray-100">Calcular Frete e Prazo</h2>
                     </div>
-                    <div class="flex justify-between">
-                        <span>Frete</span>
-                        <span class="text-rg-rose">Calculado no checkout</span>
+
+                    <div class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text"
+                                   [ngModel]="cepInput()"
+                                   (ngModelChange)="onCepInput($event)"
+                                   (keyup.enter)="calculateShipping()"
+                                   maxlength="9"
+                                   placeholder="00000-000"
+                                   class="w-full bg-rg-dark border border-rg-rose/30 px-3 py-2 text-xs text-gray-100 font-mono tracking-wider placeholder-gray-500 focus:outline-none focus:border-rg-rose" />
+                            <button (click)="calculateShipping()"
+                                    [disabled]="shippingService.loading()"
+                                    class="px-4 py-2 bg-rg-rose text-rg-dark text-xs uppercase tracking-wider font-semibold hover:bg-white transition-all disabled:opacity-50 shrink-0">
+                                <span *ngIf="!shippingService.loading()">Calcular</span>
+                                <span *ngIf="shippingService.loading()" class="animate-pulse">...</span>
+                            </button>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[10px] text-gray-400">
+                            <span>Digite seu CEP de entrega</span>
+                            <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" rel="noopener noreferrer"
+                               class="text-rg-rose hover:underline">
+                                Não sei meu CEP
+                            </a>
+                        </div>
+
+                        <!-- Mensagem de Erro de Frete -->
+                        <div *ngIf="shippingService.errorMessage()" class="text-xs text-red-400 bg-red-950/40 p-2.5 rounded border border-red-500/40 flex items-center gap-2">
+                            <svg lucideAlertTriangle class="size-4 shrink-0 text-red-400"></svg>
+                            <span>{{ shippingService.errorMessage() }}</span>
+                        </div>
+
+                        <!-- Lista de Opções de Frete Calculadas -->
+                        <div *ngIf="shippingService.shippingResponse() as res" class="pt-3 border-t border-rg-rose/15 space-y-2">
+                            <div class="text-[11px] text-gray-400 flex items-center gap-1.5 pb-1">
+                                <svg lucideMapPin class="size-3 text-rg-rose"></svg>
+                                <span>{{ res.city }} - {{ res.state }}</span>
+                            </div>
+
+                            <div *ngFor="let opt of res.options"
+                                 (click)="selectShippingOption(opt)"
+                                 [class.border-rg-rose]="shippingService.selectedOption()?.id === opt.id"
+                                 [class.bg-rg-dark]="shippingService.selectedOption()?.id === opt.id"
+                                 [class.border-rg-rose/20]="shippingService.selectedOption()?.id !== opt.id"
+                                 class="p-2.5 border rounded cursor-pointer transition-all hover:border-rg-rose/50 flex items-center justify-between text-xs">
+                                
+                                <div class="flex items-center gap-2.5">
+                                    <div class="size-4 rounded-full border flex items-center justify-center"
+                                         [class.border-rg-rose]="shippingService.selectedOption()?.id === opt.id"
+                                         [class.border-gray-500]="shippingService.selectedOption()?.id !== opt.id">
+                                        <div *ngIf="shippingService.selectedOption()?.id === opt.id" class="size-2 rounded-full bg-rg-rose"></div>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-gray-200 flex items-center gap-1.5">
+                                            <span>{{ opt.name }}</span>
+                                            <span *ngIf="opt.free" class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                                GRÁTIS
+                                            </span>
+                                        </div>
+                                        <div class="text-[10px] text-gray-400 font-mono">
+                                            Prazo: {{ opt.deliveryRange }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-right">
+                                    <span *ngIf="opt.free" class="font-serif text-sm font-semibold text-emerald-400">
+                                        R$ 0,00
+                                    </span>
+                                    <span *ngIf="!opt.free" class="font-serif text-sm font-semibold text-rg-rose">
+                                        R$ {{ opt.price.toFixed(2) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-rg-rose/20 flex justify-between items-baseline">
-                    <span class="text-sm font-semibold uppercase tracking-wider text-gray-200">Total Estimado</span>
-                    <span class="font-serif text-2xl text-rg-rose">R$ {{ cartService.subtotal().toFixed(2) }}</span>
+                <!-- Resumo da Compra -->
+                <div class="p-6 bg-rg-surface border border-rg-rose/30">
+                    <h2 class="font-serif text-lg text-gray-100 border-b border-rg-rose/20 pb-3">Resumo da Compra</h2>
+
+                    <div class="py-4 space-y-3 text-xs text-gray-300">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span class="font-medium text-gray-100">R$ {{ cartService.subtotal().toFixed(2) }}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span>Frete</span>
+                            <span *ngIf="shippingService.selectedOption() as opt" class="font-medium">
+                                <span *ngIf="opt.free" class="text-emerald-400 font-semibold">GRÁTIS</span>
+                                <span *ngIf="!opt.free" class="text-rg-rose">R$ {{ opt.price.toFixed(2) }}</span>
+                                <span class="text-[10px] text-gray-400 ml-1">({{ opt.carrier }})</span>
+                            </span>
+                            <span *ngIf="!shippingService.selectedOption()" class="text-gray-400 text-[11px] italic">
+                                Calcule acima
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-rg-rose/20 flex justify-between items-baseline">
+                        <span class="text-sm font-semibold uppercase tracking-wider text-gray-200">Total</span>
+                        <span class="font-serif text-2xl text-rg-rose">R$ {{ totalWithShipping().toFixed(2) }}</span>
+                    </div>
+
+                    <a routerLink="/checkout"
+                        class="mt-8 block w-full py-3.5 bg-rg-rose text-rg-dark text-center font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose border border-rg-rose transition-all duration-300">
+                        Finalizar Pedido
+                    </a>
+
+                    <a routerLink="/produtos"
+                        class="mt-3 block text-center text-[10px] uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors">
+                        Continuar Comprando
+                    </a>
                 </div>
 
-                <a routerLink="/checkout"
-                    class="mt-8 block w-full py-3.5 bg-rg-rose text-rg-dark text-center font-semibold text-xs tracking-[0.25em] uppercase hover:bg-transparent hover:text-rg-rose border border-rg-rose transition-all duration-300">
-                    Finalizar Pedido
-                </a>
-
-                <a routerLink="/produtos"
-                    class="mt-3 block text-center text-[10px] uppercase tracking-widest text-gray-400 hover:text-rg-rose transition-colors">
-                    Continuar Comprando
-                </a>
             </aside>
 
         </div>
